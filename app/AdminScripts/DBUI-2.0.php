@@ -1,15 +1,18 @@
 <?php
-	//DBUI - DataBase User Interface v2.0.0.0
-	//© 2009-2014 Dipl.-Ing. (FH) Oliver Grünberg, Schreiber & Freunde GmbH, www.schreiber-freunde.de
-	//Quelle: http://www.php.net/manual/en/sockets.examples.php
+	// DBUI - DataBase User Interface v2.0.0.0
+	// © 2009-2014 Dipl.-Ing. (FH) Oliver Grünberg, Schreiber & Freunde GmbH, www.schreiber-freunde.de
+
+	// Inspiration:
+	// http://www.php.net/manual/en/sockets.examples.php
+	// http://www.if-not-true-then-false.com/2012/php-pdo-sqlite3-example/
+	// http://www.ibm.com/developerworks/xml/library/x-javascriptdataaccess/index.html?ca=dat
 
 	error_reporting(E_ALL);
 
-	/* Allow the script to hang around waiting for connections. */
+	// Allow the script to hang around waiting for connections.
 	set_time_limit(0);
 
-	/* Turn on implicit output flushing so we see what we're getting
-	 * as it comes in. */
+	// Turn on implicit output flushing so we see what we're getting as it comes in
 	ob_implicit_flush();
 
 	$address = '127.0.0.1';
@@ -22,12 +25,12 @@
 		echo "\nquitting DBUI...\n\n";
 		exit(0);
 	}
-//***
+// ***
 	if (!socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1)) { 
 		echo "### Reusing socket: ".socket_strerror(socket_last_error($sock)."###"); 
 		//exit; 
 	}
-//***
+// ***
 	if (socket_bind($sock, $address, $port) === false) {
 		echo "socket_bind() failed, reason: " . socket_strerror(socket_last_error($sock)) . "\n";
 		echo "\nquitting DBUI...\n\n";
@@ -48,14 +51,14 @@
 			break;
 		}
 
-		//read socket
+		// read socket
 		$buf = socket_read($msgsock, 1048576, PHP_NORMAL_READ);
 
-		//check GET
+		// check GET
 		$buf = explode(" ", $buf);
 		var_dump($buf);
 
-		//clean up / after GET
+		// clean up / after GET
 		$buf[1] = ltrim($buf[1], "/");
 
 		echo "\nbase64 encoded GET: ".$buf[1];
@@ -67,13 +70,13 @@
 			break;
 		}
 
-		//write socket Base64 encoded
+		// write socket Base64 encoded
 		$bufBase64 = base64_encode($bufUTF8);
 		$msg = "\n$bufBase64\n";
 		socket_write($msgsock, $msg, strlen($msg));
 
 
-		//closing socket after first reply!
+		// closing socket after first reply!
 		socket_close($msgsock);
 	} while (true);
 
