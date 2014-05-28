@@ -1,0 +1,1 @@
+﻿function shell(cmd) {    var call ='do shell script "'+        cmd.replace(/\\/g,"\\\\").replace(/"/g,'\\"')+        '"';    return app.doScript(call,    ScriptLanguage.APPLESCRIPT_LANGUAGE);}shell('curl 127.0.0.1:6789/cXVpdCBEQlVJCg==');
