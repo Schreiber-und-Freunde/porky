@@ -22,7 +22,22 @@
 	$address = '127.0.0.1';
 	$port = 6789;
 
-	echo "Welcome to DBUI - DataBase User Interface!\n******************************************\n";
+
+
+	echo " ██▓███   ▒█████   ██▀███   ██ ▄█▀▓██   ██▓\n".
+		"▓██░  ██▒▒██▒  ██▒▓██ ▒ ██▒ ██▄█▒  ▒██  ██▒\n".
+		"▓██░ ██▓▒▒██░  ██▒▓██ ░▄█ ▒▓███▄░   ▒██ ██░\n".
+		"▒██▄█▓▒ ▒▒██   ██░▒██▀▀█▄  ▓██ █▄   ░ ▐██▓░\n".
+		"▒██▒ ░  ░░ ████▓▒░░██▓ ▒██▒▒██▒ █▄  ░ ██▒▓░\n".
+		"▒▓▒░ ░  ░░ ▒░▒░▒░ ░ ▒▓ ░▒▓░▒ ▒▒ ▓▒   ██▒▒▒ \n".
+		"░▒ ░       ░ ▒ ▒░   ░▒ ░ ▒░░ ░▒ ▒░ ▓██ ░▒░ \n".
+		"░░       ░ ░ ░ ▒    ░░   ░ ░ ░░ ░  ▒ ▒ ░░  \n".
+		"             ░ ░     ░     ░  ░    ░ ░     \n".
+		"                                   ░ ░     \n";
+
+
+
+	echo "\n(c)2009–2014 DBUI - DataBase User Interface\n\n";
 
 	if (($sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) === false) {
 		echo "socket_create() failed, reason: " . socket_strerror(socket_last_error()) . "\n";
