@@ -1,0 +1,1 @@
+﻿#include ../bin/porky.jsx;var myString = "1a, 2a, 3a, 4a|hey, ho, let's, go!";var myArray = stringToTwoDArray(myString, ",", "|");alert( JSON.stringify(myArray) );var myOtherString = twoDArrayToString(myArray, ",","|");alert(myOtherString);

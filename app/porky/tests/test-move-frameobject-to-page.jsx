@@ -1,0 +1,1 @@
+﻿#include ../bin/porky.jsx;var myNewPage = addNewPage();var myTextframe = addFrame(0, 0, 50, 50, "Hello porky!");myNewPage = moveObjectToPage(myTextframe, myNewPage);

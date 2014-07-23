@@ -1,0 +1,1 @@
+﻿#include ../bin/porky.jsx;var myImagefile = createPlaceholderImage();//File object can be any filevar myImageframe = addFrame(15, 65, 50, 50, myImagefile);

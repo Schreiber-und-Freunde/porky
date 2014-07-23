@@ -1,0 +1,1 @@
+﻿#include ../bin/porky.jsx;var thisParentFolder = File($.fileName).parent;var thisRootFolder = File("~").fsName;var thisAbsolutePath = thisParentFolder.toString().replace("~", thisRootFolder);alert("Placing this file\n" + thisAbsolutePath + "/snippet.idms");var mySnippet = placeSnippet( thisAbsolutePath + "/snippet.idms", 115, 65);
