@@ -1,6 +1,9 @@
-#Headlines are ment to contain informative information.
+# porky
 
-This is a headline.
-Hello Oli!
-Hello world!
-***Does this make sense?
+## porky is a JavaScript extension for Adobe InDesign
+
+With porky you
+* automize workflows
+* code less
+* add safety to recurring tasks
+* connect to databases
