@@ -18,7 +18,7 @@ Some code examples
 ```javascript
 // XML data source to JSON conversion tests
 dataSourceType = 'XML';
-dataSourceName = 'http://weather.yahooapis.com/forecastrss?w=12835979″;
+dataSourceName = 'http://weather.yahooapis.com/forecastrss?w=12835979';
 var myXMLResult = connectToDataSource('//channel');//enter XPath here
 alert(myXMLResult);
 
@@ -39,17 +39,17 @@ dataSourceName = thisAbsolutePath + '/database.sqlite';
 dataSourceUsername = '-';
 dataSourcePassword = '-';
 var mySQLiteResult = '';
-mySQLiteResult = connectToDataSource('SELECT * FROM evenmorerows LIMIT 1000,1″);
+mySQLiteResult = connectToDataSource('SELECT * FROM evenmorerows LIMIT 1000,1');
 
 /*
 mySQLiteResult = connectToDataSource('SELECT COUNT(ClientLastname) AS ZAEHLER FROM MyTable');
 mySQLiteResult = connectToDataSource('SELECT * FROM MyTable');
-mySQLiteResult = connectToDataSource('UPDATE MyTable SET ClientLastname=’Möller’ WHERE ClientLastname=’Müller’');
+mySQLiteResult = connectToDataSource('UPDATE MyTable SET ClientLastname="Möller" WHERE ClientLastname="Müller"');
 mySQLiteResult = connectToDataSource('SELECT MyOtherTable.ClientFirstname, MyTable.ClientLastname FROM MyTable, MyOtherTable');
 mySQLiteResult = connectToDataSource('CREATE TABLE byebye(Spalte1 varchar(256), Spalte2 varchar(256), Spalte3 INT)');
-mySQLiteResult = connectToDataSource('INSERT INTO byebye (Spalte1, Spalte2, Spalte3) VALUES (‘hallo’, ‘oli’, ‘ü’)');
+mySQLiteResult = connectToDataSource('INSERT INTO byebye (Spalte1, Spalte2, Spalte3) VALUES ("hallo", "oli", "ü")');
 mySQLiteResult = connectToDataSource('SELECT * FROM byebye');
-mySQLiteResult = connectToDataSource('DELETE FROM byebye WHERE(Spalte3=’ü’)');
+mySQLiteResult = connectToDataSource('DELETE FROM byebye WHERE(Spalte3="ü")');
 mySQLiteResult = connectToDataSource('ALTER TABLE byebye ADD Zeitstempel TIMESTAMP');
 mySQLiteResult = connectToDataSource('SELECT name FROM sqlite_master');
 mySQLiteResult = connectToDataSource('PRAGMA table_info(byebye)');
