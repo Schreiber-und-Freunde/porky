@@ -13,7 +13,7 @@ With porky you
 
 Some code examples
 
-### connectToDataSource (dataSourceQuery)
+### _connectToDataSource ('dataSourceQuery')_
 
 ```javascript
 // XML data source to JSON conversion tests
@@ -31,6 +31,7 @@ var thisParentFolder = File($.fileName).parent;
 var thisRootFolder = File('~').fsName;
 var thisAbsolutePath = unescape( thisParentFolder.toString().replace('~', thisRootFolder) );
 alert(thisAbsolutePath);
+
 // GLOBAL VARIABLES
 dataSourceType = 'SQLite';
 dataSourceServer = '-';
@@ -58,8 +59,11 @@ mySQLiteResult = connectToDataSource('DROP TABLE byebye');
 alert('This comes from the database\n' + mySQLiteResult);
 mySQLiteResult = json_parse(mySQLiteResult);
 mySQLiteResult = mySQLiteResult[0].col7;
+
 alert('Accessing keys directly is possible!\n' + mySQLiteResult);
 ```
+
+**Result showing as a table...**
 
 | First Header  | Second Header |
 | ------------- | ------------- |
