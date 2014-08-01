@@ -12,5 +12,5 @@ With porky you
 
 
 
-Please check the product website www.porky.io for code examples.
+Please check the product website porky.io for code examples.
 
