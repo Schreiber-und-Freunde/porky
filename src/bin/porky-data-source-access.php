@@ -1,10 +1,5 @@
 <?php
 /*
-	porky data source access interface
-	(c)2009 - 2014 Dipl.-Ing. (FH) Oliver Grünberg
-	www.porky.io
-
-
 	Start porky data source access
 	via commandline
 	php porky-db-access.php
