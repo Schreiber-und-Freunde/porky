@@ -14,3 +14,4 @@ With porky you
 
 Please check the product website http://porky.io for code examples.
 
+Documentation available unter http://porky.io/documentation/
