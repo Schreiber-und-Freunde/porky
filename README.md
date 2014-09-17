@@ -15,3 +15,5 @@ With porky you
 Please check the product website http://porky.io for code examples.
 
 Documentation available unter http://porky.io/documentation/
+
+Sample PHP socket server for handling SQLite and XML sources available in src/bin
