@@ -1,1 +1,1 @@
-﻿#include ../bin/porky.jsx;var myString = "hey, ho, let's, go!";var myTextframe = addFrame(15, 15, 100, 50, "test test one two...\r");var myTable = appendToFrame(myTextframe, myString);
+﻿#include ../bin/porky.jsx;var myString = "hey, ho, let's, go!";var myTextframe = addFrame(15, 15, 100, 50, "test test one two...\r");var myText = appendToFrame(myTextframe, myString);
