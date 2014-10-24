@@ -32,13 +32,13 @@ Sample PHP socket server for handling SQLite and XML sources available in src/bi
 * Setup php.ini correctly
 * Unpack its content into "your-Adobe-InDesign-Scripts-Panel-folder/porky/src/bin/php-win/"
 * Inside this folder there's a file namend "php.ini" – you can use it for testing or create a new one
-** Be sure to uncomment the following settings in php.ini:
-** extension_dir = "ext"
-** extension=php_sockets.dll
-** extension=php_sqlite3.dll
-** extension=php_pdo_sqlite.dll
-** extension=php_xmlrpc.dll
-** ... and of course you have to load all dlls for extra database support, too!
+- Be sure to uncomment the following settings in php.ini:
+- extension_dir = "ext"
+- extension=php_sockets.dll
+- extension=php_sqlite3.dll
+- extension=php_pdo_sqlite.dll
+- extension=php_xmlrpc.dll
+- ... and of course you have to load all dlls for extra database support, too!
 * In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx
 * Create a new InDesign layout document and start playing with the examples
 * Now: have fun and create workflows!
