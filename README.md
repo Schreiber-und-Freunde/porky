@@ -28,9 +28,9 @@ Sample PHP socket server for handling SQLite and XML sources available in src/bi
 
 ## Windows
 * Download this projekt and unzip the archive into your Adobe InDesign Scripts Panel folder
-* Download & install php binaries (e.g. from http://windows.php.net/download/)
-* Setup php.ini correctly
+* Download php binaries (e.g. from http://windows.php.net/download/)
 * Unpack its content into "your-Adobe-InDesign-Scripts-Panel-folder/porky/src/bin/php-win/"
+* Setup php.ini correctly
 * Inside this folder there's a file namend "php.ini" – you can use it for testing or create a new one
 - Be sure to uncomment the following settings in php.ini:
 - extension_dir = "ext"
