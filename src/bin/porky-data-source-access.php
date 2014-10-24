@@ -1,14 +1,14 @@
 <?php
 /*
 	Start porky data source access
-	via commandline
+	via command line on OS-X
 	php porky-db-access.php
 
 	Quit porky data source access
 	via web browser
 	http://127.0.0.1:6789/cXVpdCBwb3JreQo=
 
-	via command line
+	via command line on OS-X
 	Get base64 encoded string
 	echo 'quit porky' | openssl base64
 	curl 127.0.0.1:6789/cXVpdCBwb3JreQo=
@@ -19,8 +19,6 @@
 	http://www.if-not-true-then-false.com/2012/php-pdo-sqlite3-example/
 	http://www.ibm.com/developerworks/xml/library/x-javascriptdataaccess/index.html?ca=dat
 */
-
-
 	error_reporting(E_ALL);
 
 	// Allow the script to hang around waiting for connections.
@@ -36,22 +34,7 @@
 	$address = '127.0.0.1';
 	$port = 6789;
 
-
-
-	echo "\n ██▓███   ▒█████   ██▀███   ██ ▄█▀▓██   ██▓\n".
-		"▓██░  ██▒▒██▒  ██▒▓██ ▒ ██▒ ██▄█▒  ▒██  ██▒\n".
-		"▓██░ ██▓▒▒██░  ██▒▓██ ░▄█ ▒▓███▄░   ▒██ ██░\n".
-		"▒██▄█▓▒ ▒▒██   ██░▒██▀▀█▄  ▓██ █▄   ░ ▐██▓░\n".
-		"▒██▒ ░  ░░ ████▓▒░░██▓ ▒██▒▒██▒ █▄  ░ ██▒▓░\n".
-		"▒▓▒░ ░  ░░ ▒░▒░▒░ ░ ▒▓ ░▒▓░▒ ▒▒ ▓▒   ██▒▒▒ \n".
-		"░▒ ░       ░ ▒ ▒░   ░▒ ░ ▒░░ ░▒ ▒░ ▓██ ░▒░ \n".
-		"░░       ░ ░ ░ ▒    ░░   ░ ░ ░░ ░  ▒ ▒ ░░  \n".
-		"             ░ ░     ░     ░  ░    ░ ░     \n".
-		"                                   ░ ░     \n";
-
-
-
-	echo "\nporky data source access interface\n\n";
+	echo "\n**********************************\nporky data source access interface\n**********************************\n\nlistening...\n\n";
 
 	if (($sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) === false) {
 		echo "socket_create() failed, reason: " . socket_strerror(socket_last_error()) . "\n";
@@ -129,13 +112,11 @@
 
 		echo "\nJSON result: ".$resultAllJSON."\n******************************************\n";
 
-
-
 		// write socket Base64 encoded
 		$resultAllJSONBase64 = base64_encode($resultAllJSON);
 		$msg = "\n$resultAllJSONBase64\n";
-		socket_write($msgsock, $msg, strlen($msg));
 
+		socket_write($msgsock, $msg, strlen($msg));
 
 		// closing socket after first reply!
 		socket_close($msgsock);
