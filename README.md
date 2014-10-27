@@ -16,7 +16,7 @@ Please check the product website http://porky.io for code examples.
 
 Documentation available unter http://porky.io/documentation/
 
-Sample PHP socket server for handling SQLite and XML sources available in src/bin
+Sample PHP socket server for handling MySQL, SQLite and XML sources available in src/bin
 
 ## 30 seconds super simple installation
 
@@ -37,6 +37,7 @@ Sample PHP socket server for handling SQLite and XML sources available in src/bi
 - extension=php_sockets.dll
 - extension=php_sqlite3.dll
 - extension=php_pdo_sqlite.dll
+- extension=php_pdo_mysql.dll
 - extension=php_xmlrpc.dll
 - ... and of course you have to load all dlls for extra database support, too!
 * Start Adobe InDesign
