@@ -34,7 +34,7 @@
 	$address = '127.0.0.1';
 	$port = 6789;
 
-	echo "\n**********************************\nporky data source access interface\n**********************************\n\nlistening...\n\n";
+	echo "\n**********************************\nporky data source access interface\n**********************************\n\nlistening on ".$address.":".$port."\n\n";
 
 	if (($sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) === false) {
 		echo "socket_create() failed, reason: " . socket_strerror(socket_last_error()) . "\n";
@@ -133,17 +133,22 @@
 
 		try {
 
-			if($dataSourceType == "SQLite"){
-				// Create (connect to) SQLite database in file
-				$fileDB = new PDO("sqlite:".$dataSourceName);
+			if($dataSourceType == "SQLite" || $dataSourceType == "MySQL"){
+				if($dataSourceType == "SQLite"){
+					// Create (connect to) SQLite database file
+					$db = new PDO("sqlite:".$dataSourceName);
+				}elseif($dataSourceType == "MySQL"){
+					// Create MySQL server connection
+					$db = new PDO("mysql:host=".$dataSourceServer."; dbname=".$dataSourceName."; charset=utf8", $dataSourceUsername, $dataSourcePassword);
+				}
 				// Set errormode to exceptions
-				$fileDB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-				$result = $fileDB->query($dataSourceQuery);
+				$result = $db->query($dataSourceQuery);
 				$resultAll = $result->fetchAll(PDO::FETCH_ASSOC);
 
 				// Close file db connection
-				$fileDB = null;
+				$db = null;
 
 				// return result as array
 				return $resultAll;
@@ -162,9 +167,6 @@
 				return $resultAll;
 			}
 
-			if($dataSourceType == "MySQL"){
-				echo "\ndataSourceType [".$dataSourceType."] is not yet supported.\n";
-			}
 
 			if($dataSourceType != "SQLite" && $dataSourceType != "MySQL" && $dataSourceType != "XML"){
 				echo "\ndataSourceType [".$dataSourceType."] is not supported.\n";
