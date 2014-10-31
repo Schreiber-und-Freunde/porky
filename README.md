@@ -8,6 +8,7 @@ With porky you
 * add safety to recurring tasks
 * code less
 * connect to databases
+* synchronize your layout by pushing a button
 * extend the possibilities of Adobe's ExtendScript
 
 
