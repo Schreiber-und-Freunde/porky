@@ -1,10 +1,10 @@
 <?php
 /*
-	Start porky data source access
+	start porky data source access
 	via command line on OS-X
 	php porky-db-access.php
 
-	Quit porky data source access
+	quit porky data source access
 	via web browser
 	http://127.0.0.1:6789/cXVpdCBwb3JreQo=
 
@@ -14,23 +14,24 @@
 	curl 127.0.0.1:6789/cXVpdCBwb3JreQo=
 
 
-	Inspiration
+	inspiration
 	http://www.php.net/manual/en/sockets.examples.php
 	http://www.if-not-true-then-false.com/2012/php-pdo-sqlite3-example/
 	http://www.ibm.com/developerworks/xml/library/x-javascriptdataaccess/index.html?ca=dat
+	http://stackoverflow.com/questions/23062537/how-to-convert-html-to-json-using-php
 */
 	error_reporting(E_ALL);
 
-	// Allow the script to hang around waiting for connections.
+	// allow the script to hang around waiting for connections.
 	set_time_limit(0);
 
-	// Turn on implicit output flushing so we see what we're getting as it comes in
+	// turn on implicit output flushing so we see what we're getting as it comes in
 	ob_implicit_flush();
 
 
 
 
-	// *** Socket server
+	// socket server
 	$address = '127.0.0.1';
 	$port = 6789;
 
@@ -44,7 +45,7 @@
 
 	if (!socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1)) { 
 		echo "### Reusing socket: ".socket_strerror(socket_last_error($sock)."###"); 
-		//exit; 
+		// exit; 
 	}
 
 	if (socket_bind($sock, $address, $port) === false) {
@@ -77,7 +78,7 @@
 		// clean up / after GET
 		$buf[1] = ltrim($buf[1], "/");
 
-		//echo "\nbase64 encoded GET: ".$buf[1];
+		// echo "\nbase64 encoded GET: ".$buf[1];
 		$bufUTF8 = base64_decode($buf[1]);
 
 		if($bufUTF8 == "quit porky" || $bufUTF8 == "quit porky\n"){
@@ -85,15 +86,15 @@
 			break;
 		}
 
-		// For testing purposes use this working JSON string
+		// for testing purposes use this working JSON string
 		// $bufUTF8 = '{"porky":{"dataSourceType":"SQLite","dataSourceServer":"127.0.0.1","dataSourceName":"testdb.sqlite3","dataSourceUsername":"Oliver","dataSourcePassword":"1234","dataSourceQuery":"SELECT * FROM messages"}}';
 
 		echo "\nbase64 decoded GET: ".$bufUTF8."\n";
 
-		// Convert GET request to JSON
+		// convert GET request to JSON
 		$getRequestJSON = json_decode($bufUTF8, true);
 
-		// Extract values from JSON and fill variables
+		// extract values from JSON and fill variables
 		$dataSourceType = $getRequestJSON["porky"]["dataSourceType"];
 		$dataSourceServer = $getRequestJSON["porky"]["dataSourceServer"];
 		$dataSourceName = $getRequestJSON["porky"]["dataSourceName"];
@@ -101,7 +102,7 @@
 		$dataSourcePassword = $getRequestJSON["porky"]["dataSourcePassword"];
 		$dataSourceQuery = $getRequestJSON["porky"]["dataSourceQuery"];
 
-		// *** Request data source
+		// request data source
 		$resultAll = requestDataSource($dataSourceType, $dataSourceServer, $dataSourceName, $dataSourceUsername, $dataSourcePassword, $dataSourceQuery);
 		/*
 			echo "\n-------------------------\n";
@@ -128,26 +129,26 @@
 
 
 
-	// *** Requesting data sources
+	// requesting data sources
 	function requestDataSource($dataSourceType, $dataSourceServer, $dataSourceName, $dataSourceUsername, $dataSourcePassword, $dataSourceQuery){
 
 		try {
 
 			if($dataSourceType == "SQLite" || $dataSourceType == "MySQL"){
 				if($dataSourceType == "SQLite"){
-					// Create (connect to) SQLite database file
+					// create (connect to) SQLite database file
 					$db = new PDO("sqlite:".$dataSourceName);
 				}elseif($dataSourceType == "MySQL"){
-					// Create MySQL server connection
+					// create MySQL server connection
 					$db = new PDO("mysql:host=".$dataSourceServer."; dbname=".$dataSourceName."; charset=utf8", $dataSourceUsername, $dataSourcePassword);
 				}
-				// Set errormode to exceptions
+				// set errormode to exceptions
 				$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 				$result = $db->query($dataSourceQuery);
 				$resultAll = $result->fetchAll(PDO::FETCH_ASSOC);
 
-				// Close file db connection
+				// close file db connection
 				$db = null;
 
 				// return result as array
@@ -167,20 +168,65 @@
 				return $resultAll;
 			}
 
+			if($dataSourceType == "JSON"){
+				$fileContents = file_get_contents($dataSourceName);
+				$fileContents = str_replace(array("\n", "\r", "\t"), '', $fileContents);
+				// $fileContents = trim(str_replace('"', "'", $fileContents));
 
-			if($dataSourceType != "SQLite" && $dataSourceType != "MySQL" && $dataSourceType != "XML"){
+				// return result
+				return $fileContents;
+			}
+
+			if($dataSourceType == "htmlToJSON"){
+				$convertableString = str_replace(array("\n", "\r", "\t"), '', $dataSourceQuery);
+				$convertableString = str_replace("</p>", "\r</p>", $convertableString);
+				$convertableString = trim(str_replace('"', "'", $convertableString));
+				$resultJSON = htmlToObject($convertableString);
+				return $resultJSON;
+			}
+
+			if($dataSourceType != "SQLite" && $dataSourceType != "MySQL" && $dataSourceType != "XML" && $dataSourceType != "JSON" && $dataSourceType != "htmlToJSON"){
 				echo "\ndataSourceType [".$dataSourceType."] is not supported.\n";
 			}
 		}catch(PDOException $e) {
-			// Print PDOException message
+			// print PDOException message
 			echo $e->getMessage();
 		}
 
 	}
 
 
+	// helper functions for htmlToJSON conversion
+	function htmlToObject($html) {
+		$dom = new DOMDocument();
+		// $dom->loadHTML($html);
+		$dom->loadHTML('<?xml encoding="UTF-8">'.$html);
+		return elementToObject($dom->documentElement, "");
+	}
 
-
-
-
+	function elementToObject($element, $previous) {
+		// echo $element->tagName, "\n";
+		if($previous!=""){
+			$previous = $previous."/";
+		}
+		$obj = array( "tag" => $element->tagName );
+		foreach ($element->attributes as $attribute) {
+			$obj[$attribute->name] = $attribute->value;
+		}
+		foreach ($element->childNodes as $subElement) {
+			if ($subElement->nodeType == XML_TEXT_NODE) {
+				$obj["html"][] = $subElement->wholeText;
+				$obj["html"]["closing"] = $previous.$element->tagName;
+			}
+			elseif ($subElement->nodeType == XML_CDATA_SECTION_NODE) {
+				$obj["html"][] = $subElement->data;
+				$obj["html"]["closing"] = $element->tagName;
+			}
+			else {
+				$obj["html"][] = elementToObject($subElement, $element->tagName);
+				$obj["html"]["closing"] = $element->tagName;
+			}
+		}
+		return $obj;
+	}
 ?>
