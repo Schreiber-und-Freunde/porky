@@ -44,3 +44,52 @@ Please check the product website http://porky.io for code examples!
 * In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx
 * Create a new InDesign layout document and start playing with the examples
 * Now: have fun and create workflows!
+
+
+## Changelog
+Version 0.2.0 (2014-11-26)
+* adds htmlToJSON as new dataSource.type
+* adds httpGetBinaryFile()
+* fixes syncXMLElement()
+* adds modifyFrame()
+
+Version 0.1.9 (2014-10-31)
+* adds syncing feature …
+
+Version 0.1.8 (2014-10-30)
+* adds function setSyncIdentifier()
+
+Version 0.1.7 (2014-10-29)
+* fixes sync bug returning var assXMLElem = null
+
+Version 0.1.6 (2014-10-27)
+* adds MySQL support
+
+Version 0.1.6 (2014-10-24)
+* adds windows compatible version
+
+Version 0.1.5 (2014-10-08)
+* adds info in Windows launcher script
+
+Version 0.1.4 (2014-09-24)
+* fixes wrong variable declaration in example script
+
+Version 0.1.3 (2014-09-18)
+* fixes relative/fixed path
+
+Version 0.1.2 (2014-09-17)
+* fixes relative path in sync scripts
+* renames tests to samples and cleans up
+* removes copyright
+* folder cleanup
+* code review
+* adds license
+* adds license and link to documentation
+* ixes correct if/else …
+
+Version 0.1.1 (2014-09-15)
+* adds grunt
+* Changes identing, adds grunt
+
+Version 0.1.0 (2014-09-11)
+* fixes fitting issue in fitTextboxHeightToContent()
