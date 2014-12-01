@@ -172,6 +172,7 @@
 				$fileContents = file_get_contents($dataSourceName);
 				$fileContents = str_replace(array("\n", "\r", "\t"), '', $fileContents);
 				// $fileContents = trim(str_replace('"', "'", $fileContents));
+				$fileContents = json_decode($fileContents);
 
 				// return result
 				return $fileContents;
