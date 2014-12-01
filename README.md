@@ -47,6 +47,9 @@ Please check the product website http://porky.io for code examples!
 
 
 ## Changelog
+Version 0.2.1 (2014-12-01)
+* fixes bug for dataSourceType = JSON, returns correctly parsed JSON object
+
 Version 0.2.0 (2014-11-26)
 * adds htmlToJSON as new dataSource.type
 * adds httpGetBinaryFile()
