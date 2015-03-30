@@ -49,6 +49,9 @@ Please check the product website http://porky.io for code examples!
 
 
 ## Changelog
+Version 0.2.3 (2015-03-30)
+* extends tagThis() support for text selection inside of table cells
+
 Version 0.2.2 (2014-12-08)
 * adds new function fitTextboxHeightAndThread()
 
