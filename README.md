@@ -49,6 +49,14 @@ Please check the product website http://porky.io for code examples!
 ## Changelog
 Version 0.3.0 (2015-04-20)
 * code base (data source access side) completely ported to Node.Js
+* adds new functionality
+  * placeholderToInlineImage(targetObject, localImageFolder, downloadImage, httpSourcePort)
+  * placeHTML(targetObject, htmlText, inlineStyles, blockStyles)
+  * writeFile(fullFilePath, fileContent, lineEnding)
+  * readFile(fullFilePath)
+  * csvToTwoDArray(csvString, splittingOptions)
+  * adds new dataSource.type markdownToHTML
+  * adds new dataSource.type markdownToJSON
 
 Version 0.2.3 (2015-03-30)
 * extends tagThis() support for text selection inside of table cells
