@@ -42,8 +42,8 @@ Please check the product website http://porky.io for code examples!
 
 ## Windows
 * Download and install Node.Js binaries (e.g. from http://nodejs.org/download/)
-* it might be necessary to set the system variable NODE\_PATH correctly so it points to the folder node\_modules and Node can find its installed packages
 * for the rest see: OS-X installation
+* it might be necessary to set the system variable NODE\_PATH correctly so it points to the folder node\_modules and Node can find its installed packages
 
 
 ## Changelog
