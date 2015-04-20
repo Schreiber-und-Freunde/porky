@@ -391,7 +391,9 @@ if (typeof JSON !== 'object') {
             if (replacer && typeof replacer !== 'function' &&
                     (typeof replacer !== 'object' ||
                     typeof replacer.length !== 'number')) {
-                throw new Error('JSON.stringify');
+                // throw new Error('JSON.stringify');
+                alert('Error JSON.stringify');
+                exit(0);
             }
 
 // Make a fake root object containing our value under the key of ''.
@@ -483,7 +485,9 @@ if (typeof JSON !== 'object') {
 
 // If the text is not JSON parseable, then a SyntaxError is thrown.
 
-            throw new SyntaxError('JSON.parse');
+            // throw new SyntaxError('JSON.parse');
+            alert('Syntax error JSON.parse');
+            exit(0);
         };
     }
 }());
