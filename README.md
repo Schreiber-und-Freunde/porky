@@ -21,42 +21,29 @@ Please check the product website http://porky.io for code examples!
 * Documentation available unter http://porky.io/documentation/
 * Sample Node.Js socket server for handling MySQL, SQLite, JSON and XML sources available in src/bin
 
-## 30 seconds super simple installation
+## 60 seconds super simple installation
 
 ## OS-X
 * Download this projekt and unzip the archive into your Adobe InDesign Scripts Panel folder
 * In order to run correctly, porky needs the following npm modules to be installed via terminal:
-- 'npm install request'
-- 'npm install sqlite3'
-- 'npm install mysql'
-- 'npm install pg'
-- 'npm install xml2js'
-- 'npm install htmlparser'
-- 'npm install markdown'
-- 'npm install brucedown'
-- 'npm install html-entities
+  - 'npm install request'
+  - 'npm install sqlite3'
+  - 'npm install mysql'
+  - 'npm install pg'
+  - 'npm install xml2js'
+  - 'npm install htmlparser'
+  - 'npm install markdown'
+  - 'npm install brucedown'
+  - 'npm install html-entities
 * Start Adobe InDesign
 * In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx, now you have access to various data sources
 * Create a new InDesign layout document and start playing with the examples
 * Now: have fun and create workflows!
 
 ## Windows
-* Download this projekt and unzip the archive into your Adobe InDesign Scripts Panel folder
 * Download and install Node.Js binaries (e.g. from http://nodejs.org/download/)
-* In order to run correctly, porky needs the following npm modules to be installed via terminal:
-- 'npm install request'
-- 'npm install sqlite3'
-- 'npm install mysql'
-- 'npm install pg'
-- 'npm install xml2js'
-- 'npm install htmlparser'
-- 'npm install markdown'
-- 'npm install brucedown'
-- 'npm install html-entities
-* Start Adobe InDesign
-* In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx, now you have access to various data sources
-* Create a new InDesign layout document and start playing with the examples
-* Now: have fun and create workflows!
+* it might be necessary to set the system variable NODE\_PATH correctly so it points to the folder node\_modules and Node can find its installed packages
+* for the rest see: OS-X installation
 
 
 ## Changelog
