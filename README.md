@@ -9,46 +9,60 @@ With porky you
 * code what computers are ment to do and not humans
 * add safety to recurring tasks
 * code less
-* connect to databases
+* connect to databases and various other data sources
 * synchronize your layout by pushing a button
 * extend the possibilities of Adobe's ExtendScript
+* code completely in JavaScript
 
 
 
 Please check the product website http://porky.io for code examples!
 
 * Documentation available unter http://porky.io/documentation/
-* Sample PHP socket server for handling MySQL, SQLite and XML sources available in src/bin
+* Sample Node.Js socket server for handling MySQL, SQLite, JSON and XML sources available in src/bin
 
 ## 30 seconds super simple installation
 
 ## OS-X
 * Download this projekt and unzip the archive into your Adobe InDesign Scripts Panel folder
+* In order to run correctly, porky needs the following npm modules to be installed via terminal:
+- 'npm install request'
+- 'npm install sqlite3'
+- 'npm install mysql'
+- 'npm install pg'
+- 'npm install xml2js'
+- 'npm install htmlparser'
+- 'npm install markdown'
+- 'npm install brucedown'
+- 'npm install html-entities
 * Start Adobe InDesign
-* In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx
+* In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx, now you have access to various data sources
 * Create a new InDesign layout document and start playing with the examples
 * Now: have fun and create workflows!
 
 ## Windows
 * Download this projekt and unzip the archive into your Adobe InDesign Scripts Panel folder
-* Download php binaries (e.g. from http://windows.php.net/download/)
-* Unpack its content into "your-Adobe-InDesign-Scripts-Panel-folder/porky/src/bin/php-win/"
-* Setup php.ini correctly – use the existing one for testing or create a new one for production
-- Be sure to uncomment the following settings in php.ini:
-- extension_dir = "ext"
-- extension=php_sockets.dll
-- extension=php_sqlite3.dll
-- extension=php_pdo_sqlite.dll
-- extension=php_pdo_mysql.dll
-- extension=php_xmlrpc.dll
-- ... and of course you have to load all dlls for extra database support, too!
+* Download and install Node.Js binaries (e.g. from http://nodejs.org/download/)
+* In order to run correctly, porky needs the following npm modules to be installed via terminal:
+- 'npm install request'
+- 'npm install sqlite3'
+- 'npm install mysql'
+- 'npm install pg'
+- 'npm install xml2js'
+- 'npm install htmlparser'
+- 'npm install markdown'
+- 'npm install brucedown'
+- 'npm install html-entities
 * Start Adobe InDesign
-* In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx
+* In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx, now you have access to various data sources
 * Create a new InDesign layout document and start playing with the examples
 * Now: have fun and create workflows!
 
 
 ## Changelog
+Version 0.3.0 (2015-04-20)
+* code base (data source access side) completely ported to Node.Js
+
 Version 0.2.3 (2015-03-30)
 * extends tagThis() support for text selection inside of table cells
 
