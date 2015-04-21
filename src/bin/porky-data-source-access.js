@@ -187,16 +187,16 @@ function porkyDataSourceAccess(){
                         chunkDataCollection += data;
                     });
                 }).on('end', function(data) {
+                    //xml2js
                     parseString(chunkDataCollection, function (err, result) {
                         // Entire result
                         chunkDataCollection = JSON.stringify(result);
                         // Parse result with dataSourceQuery
                         if(dataSourceQuery !== ''){
                             try{
+                                // e.g. using the object entireResult in combination with a passed over JSON path in dot notation '.rss.channel[0].title'
                                 var entireResult = JSON.parse(chunkDataCollection);
-                                // Accessing key directly via eval()
-                                var evalWithQuery = eval ('entireResult' + dataSourceQuery);
-                                chunkDataCollection = JSON.stringify(evalWithQuery);
+                                chunkDataCollection = JSON.stringify( eval('entireResult' + dataSourceQuery) );
                             }catch(e){
                                 console.log('\nError evaluating \'' + dataSourceQuery + '\'');
                                 console.log('\n' + e);
