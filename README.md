@@ -25,16 +25,10 @@ Please check the product website http://porky.io for code examples!
 
 ## OS-X
 * Download this projekt and unzip the archive into your Adobe InDesign Scripts Panel folder
-* In order to run correctly, porky needs the following npm modules to be installed via terminal:
-  - 'npm install request'
-  - 'npm install sqlite3'
-  - 'npm install mysql'
-  - 'npm install pg'
-  - 'npm install xml2js'
-  - 'npm install htmlparser'
-  - 'npm install markdown'
-  - 'npm install brucedown'
-  - 'npm install html-entities'
+* In order to run correctly, porky needs the following npm modules to be installed:
+  - request, sqlite3, mysql, pg, xml2js, htmlparser, markdown, brucedown and html-entities
+  - navigate via terminal to the porky project folder on your file system where the file package.json is located and enter 'npm install'
+  - all necessary dependencies will be installed automatically
 * Start Adobe InDesign
 * In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx, now you have access to various data sources
 * Create a new InDesign layout document and start playing with the examples
