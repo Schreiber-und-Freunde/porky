@@ -20,18 +20,6 @@
 
 function porkyDataSourceAccess(){
 
-    console.log('\nin order to run correctly, porky needs the following npm modules to be installed via terminal:\n' + 
-                'npm install request\n' + 
-                'npm install sqlite3\n' + 
-                'npm install mysql\n' + 
-                'npm install pg\n' + 
-                'npm install xml2js\n' + 
-                'npm install htmlparser\n' + 
-                'npm install markdown\n' + 
-                'npm install brucedown\n' + 
-                'npm install html-entities\n'
-    );
-
     var net = require('net');
     var fs = require('fs');
     var path = require('path');
