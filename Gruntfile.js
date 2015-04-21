@@ -3,7 +3,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
-      files: ['Gruntfile.js', 'app/porky/tests/**/*.jsx', 'app/porky/bin/**/*.jsx']
+      files: ['Gruntfile.js', 'src/bin/**/*.js']
     },
     watch: {
       files: ['<%= jshint.files %>'],
