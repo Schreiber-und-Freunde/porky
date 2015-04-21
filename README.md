@@ -34,7 +34,7 @@ Please check the product website http://porky.io for code examples!
   - 'npm install htmlparser'
   - 'npm install markdown'
   - 'npm install brucedown'
-  - 'npm install html-entities
+  - 'npm install html-entities'
 * Start Adobe InDesign
 * In the InDesign Scripts Panel double click the script located at /src/start-porky-data-source-access.jsx, now you have access to various data sources
 * Create a new InDesign layout document and start playing with the examples
