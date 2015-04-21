@@ -75,8 +75,9 @@ function porkyDataSourceAccess(){
             console.log('\n' + requestUTF8);
 
             // Convert GET request to JSON
+            var getRequestJSON;
             try{
-                var getRequestJSON = JSON.parse(requestUTF8, true);
+                getRequestJSON = JSON.parse(requestUTF8, true);
             }catch(e){
                 console.log('\nError on JSON.parse() client request, invalid JSON: ' + e);
                 //sock.write('');
@@ -85,12 +86,12 @@ function porkyDataSourceAccess(){
             }
 
             // Extracting values from JSON and fill variables
-            var dataSourceType = getRequestJSON["porky"]["dataSourceType"];
-            var dataSourceServer = getRequestJSON["porky"]["dataSourceServer"];
-            var dataSourceName = getRequestJSON["porky"]["dataSourceName"];
-            var dataSourceUsername = getRequestJSON["porky"]["dataSourceUsername"];
-            var dataSourcePassword = getRequestJSON["porky"]["dataSourcePassword"];
-            var dataSourceQuery = getRequestJSON["porky"]["dataSourceQuery"];
+            var dataSourceType = getRequestJSON.porky.dataSourceType;
+            var dataSourceServer = getRequestJSON.porky.dataSourceServer;
+            var dataSourceName = getRequestJSON.porky.dataSourceName;
+            var dataSourceUsername = getRequestJSON.porky.dataSourceUsername;
+            var dataSourcePassword = getRequestJSON.porky.dataSourcePassword;
+            var dataSourceQuery = getRequestJSON.porky.dataSourceQuery;
 
             var chunkDataCollection = '';
 
@@ -109,19 +110,19 @@ function porkyDataSourceAccess(){
                     response.on('data', function(data) {
                         console.log('\nReceived data chunk: ' + data.length + ' bytes');
                         chunkDataCollection += data;
-                    })
+                    });
                 }).on('end', function(data) {
                     socketWriteResult(chunkDataCollection);
-                })
+                });
             }
 
             if(dataSourceType == 'SQLite'){
-          
+                var db;
                 if (fs.existsSync(dataSourceName + dataSourceServer)) {
                     // Database file exists
                     // Load it
                     console.log('Using database: ' + dataSourceName + dataSourceServer);
-                    var db = new sqlite3.Database(dataSourceName + dataSourceServer);
+                    db = new sqlite3.Database(dataSourceName + dataSourceServer);
                 }else {
                     // Database file does not exist
                     // Do nothing
@@ -184,13 +185,13 @@ function porkyDataSourceAccess(){
                     response.on('data', function(data) {
                         console.log('\nReceived data chunk: ' + data.length + ' bytes');
                         chunkDataCollection += data;
-                    })
+                    });
                 }).on('end', function(data) {
                     parseString(chunkDataCollection, function (err, result) {
                         // Entire result
                         chunkDataCollection = JSON.stringify(result);
                         // Parse result with dataSourceQuery
-                        if(dataSourceQuery != ''){
+                        if(dataSourceQuery !== ''){
                             try{
                                 var entireResult = JSON.parse(chunkDataCollection);
                                 // Accessing key directly via eval()
@@ -242,7 +243,7 @@ function porkyDataSourceAccess(){
                     chunkDataCollection = JSON.stringify({'html':entities.decode(dom)});
                     console.log(chunkDataCollection);
                     socketWriteResult(chunkDataCollection);
-                })
+                });
             }
 
 
