@@ -20,5 +20,16 @@
   "bugs": {
     "url": "https://github.com/Schreiber-und-Freunde/porky/issues"
   },
-  "homepage": "https://github.com/Schreiber-und-Freunde/porky"
+  "homepage": "https://github.com/Schreiber-und-Freunde/porky",
+  "dependencies": {
+    "brucedown": "^1.1.0",
+    "html-entities": "^1.1.2",
+    "htmlparser": "^1.7.7",
+    "markdown": "^0.5.0",
+    "mysql": "^2.6.2",
+    "pg": "^4.3.0",
+    "request": "^2.55.0",
+    "sqlite3": "^3.0.5",
+    "xml2js": "^0.4.8"
+  }
 }
