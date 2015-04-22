@@ -95,6 +95,7 @@ function porkyDataSourceAccess(){
 
             var chunkDataCollection = '';
             var tempJSONObject = '';
+            var paths = dataSourceQuery.split(".");
 
             // Request a remote data source
             if(dataSourceType == 'JSON'){            
@@ -122,7 +123,6 @@ function porkyDataSourceAccess(){
                             tempJSONObject = JSON.parse(chunkDataCollection);
 
                             // chunkDataCollection = JSON.stringify( eval('tempJSONObject' + dataSourceQuery) );
-                            var paths = dataSourceQuery.split(".");
 
                             for (var jsonPath = 0; jsonPath < paths.length; jsonPath++){
                                 tempJSONObject = tempJSONObject[paths[jsonPath]];
@@ -227,7 +227,6 @@ function porkyDataSourceAccess(){
                                 tempJSONObject = JSON.parse(chunkDataCollection);
 
                                 // chunkDataCollection = JSON.stringify( eval('tempJSONObject' + dataSourceQuery) );
-                                var paths = dataSourceQuery.split(".");
 
                                 for (var jsonPath = 0; jsonPath < paths.length; jsonPath++){
                                     tempJSONObject = tempJSONObject[paths[jsonPath]];
