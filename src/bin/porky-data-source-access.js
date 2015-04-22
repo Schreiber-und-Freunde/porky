@@ -94,6 +94,7 @@ function porkyDataSourceAccess(){
             var dataSourceQuery = getRequestJSON.porky.dataSourceQuery;
 
             var chunkDataCollection = '';
+            var tempJSONObject = '';
 
             // Request a remote data source
             if(dataSourceType == 'JSON'){            
@@ -112,6 +113,31 @@ function porkyDataSourceAccess(){
                         chunkDataCollection += data;
                     });
                 }).on('end', function(data) {
+                    // Parse result with dataSourceQuery
+                    if(dataSourceQuery !== ''){
+                        console.log('\nTrying to deep find ' + 'tempJSONObject.' + dataSourceQuery);
+
+                        try{
+                            // e.g. using the object tempJSONObject in combination with a passed over JSON path in dot notation 'rss.channel.0.title'
+                            tempJSONObject = JSON.parse(chunkDataCollection);
+
+                            // chunkDataCollection = JSON.stringify( eval('tempJSONObject' + dataSourceQuery) );
+                            var paths = dataSourceQuery.split(".");
+
+                            for (var jsonPath = 0; jsonPath < paths.length; jsonPath++){
+                                tempJSONObject = tempJSONObject[paths[jsonPath]];
+                            }
+                            chunkDataCollection = JSON.stringify(tempJSONObject);
+
+                        }catch(e){
+                            console.log('\nError evaluating \'' + dataSourceQuery + '\'');
+                            console.log('\n' + e);
+                            sock.end();
+                            return;
+                        }
+                    }
+
+                    console.log('\n' + chunkDataCollection);
                     socketWriteResult(chunkDataCollection);
                 });
             }
@@ -191,12 +217,23 @@ function porkyDataSourceAccess(){
                     parseString(chunkDataCollection, function (err, result) {
                         // Entire result
                         chunkDataCollection = JSON.stringify(result);
+
                         // Parse result with dataSourceQuery
                         if(dataSourceQuery !== ''){
+                            console.log('\nTrying to deep find ' + 'tempJSONObject.' + dataSourceQuery);
+
                             try{
-                                // e.g. using the object entireResult in combination with a passed over JSON path in dot notation '.rss.channel[0].title'
-                                var entireResult = JSON.parse(chunkDataCollection);
-                                chunkDataCollection = JSON.stringify( eval('entireResult' + dataSourceQuery) );
+                                // e.g. using the object tempJSONObject in combination with a passed over JSON path in dot notation 'rss.channel.0.title'
+                                tempJSONObject = JSON.parse(chunkDataCollection);
+
+                                // chunkDataCollection = JSON.stringify( eval('tempJSONObject' + dataSourceQuery) );
+                                var paths = dataSourceQuery.split(".");
+
+                                for (var jsonPath = 0; jsonPath < paths.length; jsonPath++){
+                                    tempJSONObject = tempJSONObject[paths[jsonPath]];
+                                }
+                                chunkDataCollection = JSON.stringify(tempJSONObject);
+
                             }catch(e){
                                 console.log('\nError evaluating \'' + dataSourceQuery + '\'');
                                 console.log('\n' + e);
@@ -289,6 +326,7 @@ function porkyDataSourceAccess(){
             sock.write(resultBase64);
             sock.end();
         }
+
 
     }).listen(6789, '127.0.0.1');
 
