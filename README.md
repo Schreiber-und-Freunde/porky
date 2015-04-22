@@ -19,6 +19,7 @@ With porky you
 Please check the product website http://porky.io for code examples!
 
 We also offer custom InDesign panel integration of porky and automation workflow consulting!
+
 For details please contact us via anfrage@schreiber-freunde.de
 
 * Documentation available unter http://porky.io/documentation/
