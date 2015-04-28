@@ -1,3 +1,4 @@
+
 /*
   porky
   JavaScript productivity extension library with database access for Adobe InDesign
@@ -42,9 +43,9 @@ function porkyDataSourceAccess(){
         // Adding data event handler to socket
         sock.on('data', function(data) {
 
-            console.log('\nRequest from client sock.address().address:sock.address().port ' + sock.address().address + ':' + sock.address().port);
-            console.log('\nraw utf8');
-            console.log('\n' + data.toString('utf8'));
+            // console.log('\nRequest from client sock.address().address:sock.address().port ' + sock.address().address + ':' + sock.address().port);
+            // console.log('\nraw utf8');
+            // console.log('\n' + data.toString('utf8'));
 
             var dataChunk = data.toString('utf8').split(' ');
             var requestUTF8 = '';
@@ -71,8 +72,8 @@ function porkyDataSourceAccess(){
                 requestUTF8 = new Buffer(requestBase64, 'base64').toString("utf8");
             }
 
-            console.log('\nbase64 decoded');
-            console.log('\n' + requestUTF8);
+            // console.log('\nbase64 decoded');
+            // console.log('\n' + requestUTF8);
 
             // Convert GET request to JSON
             var getRequestJSON;
@@ -282,9 +283,17 @@ function porkyDataSourceAccess(){
                 });
             }
 
+            if(dataSourceType == 'consoleLog'){
+                console.log('\nClient console.log()\n');
+                console.log(dataSourceQuery);
+                console.log('\n');
+                sock.write(new Buffer('true').toString('base64'));
+                sock.end();
+            }
 
 
-            if(dataSourceType != "SQLite" && dataSourceType != "MySQL" && dataSourceType != "XML" && dataSourceType != "JSON" && dataSourceType != "htmlToJSON" && dataSourceType != "markdownToJSON" && dataSourceType != "markdownToHTML"){
+
+            if(dataSourceType != "SQLite" && dataSourceType != "MySQL" && dataSourceType != "XML" && dataSourceType != "JSON" && dataSourceType != "htmlToJSON" && dataSourceType != "markdownToJSON" && dataSourceType != "markdownToHTML" && dataSourceType != "consoleLog"){
                 console.log('\nError: dataSourceType [' + dataSourceType + '] is not supported');
                 sock.end();
                 return;
@@ -294,8 +303,8 @@ function porkyDataSourceAccess(){
 
         // Adding close event handler to this instance of socket
         sock.on('close', function(data) {
-            console.log('\nConnection closed');
-            console.log('\n**************************************************************\n');
+            console.log('\nOK, connection closed');
+            console.log('\n**********************************\n');
         });
 
 
@@ -319,8 +328,9 @@ function porkyDataSourceAccess(){
             resultAllJSON = JSON.stringify(resultAllJSON);
             resultBase64 = new Buffer(resultAllJSON).toString('base64');
 
-            console.log('\nSending stringified & base64 encoded JSON to client');
-            console.log('\n' + resultAllJSON);
+            console.log('Responding to client');
+            // console.log('\nSending stringified & base64 encoded JSON to client');
+            // console.log('\n' + resultAllJSON);
 
             sock.write(resultBase64);
             sock.end();
