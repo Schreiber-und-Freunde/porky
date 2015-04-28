@@ -1,0 +1,1 @@
+﻿#include ../bin/porky.jsx;console.log('This is a text with unicode glyphs showing in the console window\n✠ Motörhead – Nö sleep at all ✠');alert('Check your porky console window for details!');
