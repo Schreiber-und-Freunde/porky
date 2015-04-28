@@ -9,7 +9,7 @@ With porky you
 * code what computers are ment to do and not humans
 * add safety to recurring tasks
 * code less
-* connect to databases and various other data sources
+* connect to databases and various other data sources (SQL, XML, JSON, CSV, ...)
 * synchronize your layout by pushing a button
 * extend the possibilities of Adobe's ExtendScript
 * code completely in JavaScript
@@ -49,6 +49,10 @@ For details please contact us via anfrage@schreiber-freunde.de
 
 
 ## Changelog
+Version 0.3.1 (2015-04-28)
+* adds console.log() features to Adobe ExtendScript Toolkit (ESTK)
+* code clean up
+
 Version 0.3.0 (2015-04-20)
 * code base (data source access side) completely ported to Node.Js
 * adds new functionality
