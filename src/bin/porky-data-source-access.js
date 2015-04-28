@@ -38,7 +38,7 @@ function porkyDataSourceAccess(){
     // Creating server instance
     net.createServer(function(sock) {
 
-        console.log('\nClient connected');
+        // console.log('\nClient connected');
 
         // Adding data event handler to socket
         sock.on('data', function(data) {
@@ -303,7 +303,7 @@ function porkyDataSourceAccess(){
 
         // Adding close event handler to this instance of socket
         sock.on('close', function(data) {
-            console.log('\nOK, connection closed');
+            //console.log('\nOK, connection closed');
             console.log('\n**********************************\n');
         });
 
