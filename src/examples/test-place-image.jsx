@@ -1,1 +1,1 @@
-﻿#include ../bin/porky.jsx;var myImagefile = createPlaceholderImage();//File object can be any filevar myImageframe = addFrame(15, 65, 50, 50, myImagefile);
+﻿//@include ../bin/porky.jsx;// try "~/Desktop" or any other local pathtry{	var myImagefile = createPlaceholderImage("~/Desktop");	var myImageframe = addFrame(15, 65, 50, 50, myImagefile);}catch(e){	alert("Error: check porky console for details.");	console.log(e);}

@@ -1,1 +1,1 @@
-﻿#include ../bin/porky.jsx;var myString = "1, 2, 3, 4|hey, ho, let's, go!";var myArray = stringToTwoDArray(myString, ",", "|");alert("Result\n" + myArray[0] + "\n" + myArray[1]);var myTextframe = addFrame(15, 15, 100, 50, "");var myTable = appendToFrame(myTextframe, myArray);
+﻿//@include ../bin/porky.jsx;var myString = "1, 2, 3, 4|hey, ho, let's, go!";var myArray = stringToTwoDArray(myString, ",", "|");alert("Result\n" + myArray[0] + "\n" + myArray[1]);var myTextframe = addFrame(15, 15, 100, 50, "");var myTable = appendToFrame(myTextframe, myArray);

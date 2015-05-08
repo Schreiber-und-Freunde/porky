@@ -1,1 +1,1 @@
-﻿#include ../bin/porky.jsx;var myString = "porky rocks!\nof course it does...\nmagic.";var myTextframe = addFrame(15, 15, 100, 50, myString);
+﻿//@include ../bin/porky.jsx;var myString = "porky rocks!\nof course it does...\nmagic.";var myTextframe = addFrame(15, 15, 100, 50, myString);

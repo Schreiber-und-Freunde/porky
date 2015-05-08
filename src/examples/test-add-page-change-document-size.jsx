@@ -1,1 +1,1 @@
-﻿#include ../bin/porky.jsx;var myPage = addNewPage();alert("Setting new page size:\n" + setPageSize(210, 210));
+﻿//@include ../bin/porky.jsx;var myPage = addNewPage();alert("Setting new page size:\n" + setPageSize(210, 210));
