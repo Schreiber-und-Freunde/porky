@@ -49,6 +49,13 @@ For details please contact us via anfrage@schreiber-freunde.de
 
 
 ## Changelog
+Version 0.3.2 (2015-05-08)
+* fixes image download bug in placeHTML()
+* adds placeHTML() example script
+* cleans up include directive from #include to //@include to ease JSLint
+* changes placeholder image in createPlaceholderImage() to porky logo
+* adds possibility in createPlaceholderImage() to chose a target folder
+
 Version 0.3.1 (2015-04-28)
 * adds console.log() features to Adobe ExtendScript Toolkit (ESTK)
 * code clean up
