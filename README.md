@@ -49,6 +49,10 @@ For details please contact us via anfrage@schreiber-freunde.de
 
 
 ## Changelog
+Version 0.3.3 (2015-05-22)
+* adds support for local XML and JSON files
+* code cleanup
+
 Version 0.3.2 (2015-05-08)
 * fixes image download bug in placeHTML()
 * adds placeHTML() example script
