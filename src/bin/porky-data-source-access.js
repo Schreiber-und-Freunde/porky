@@ -1,92 +1,82 @@
-
 /*
-  porky
-  JavaScript productivity extension library with database access for Adobe InDesign
-  (c)2009 - 2015 Dipl.-Ing. (FH) Oliver Grünberg
-  www.porky.io
+    porky
+    JavaScript productivity extension library with database access for Adobe InDesign
+    (c)2009 - 2015 Dipl.-Ing. (FH) Oliver Grünberg
+    www.porky.io
 
-  Include this file in your JSX scripts before anything else 
-  #include ../yourPathToPorky/porky.jsx;
-  The file porky-data-source-acces.js must be launched with the Node.Js interpreter.
-  Through porky-data-source-acces.js it is possible for porky.jsx to get access to external data sources.
-  The file porky.jsx provides extended layout functionality and access to data sources.
+    Include this file in your JSX scripts before anything else 
+    //@include ../yourPathToPorky/porky.jsx;
+    The file porky-data-source-acces.js must be launched with the Node.Js interpreter.
+    Through porky-data-source-acces.js it is possible for porky.jsx to get access to external data sources.
+    The file porky.jsx provides extended layout functionality and access to data sources.
 
-  Start porky data source access via commandline
-  node porky-data-source-access.js
+    Start porky data source access via commandline
+    node porky-data-source-access.js
 
-  Quit porky data source access via web browser
-  http://127.0.0.1:6789/cXVpdCBwb3JreQo=
+    Quit porky data source access via web browser
+    http://127.0.0.1:6789/cXVpdCBwb3JreQo=
 */
 
-
-function porkyDataSourceAccess(){
-
-    var net = require('net');
-    var fs = require('fs');
-    var path = require('path');
-    var request = require('request');
-    var sqlite3 = require('sqlite3').verbose();
-    var mysql = require('mysql');
-    var parseString = require('xml2js').parseString;
-    var htmlparser = require('htmlparser');
-    var markdown = require( "markdown" ).markdown;
-    var brucedown = require('brucedown');
-    var Entities = require('html-entities').AllHtmlEntities;
+var net = require('net');
+var fs = require('fs');
+var request = require('request');
+var sqlite3 = require('sqlite3').verbose();
+var mysql = require('mysql');
+var parseString = require('xml2js').parseString;
+var htmlparser = require('htmlparser');
+var markdown = require('markdown').markdown;
+var brucedown = require('brucedown');
+var Entities = require('html-entities').AllHtmlEntities;
 
 
-
+function porkyDataSourceAccess() {
     // Creating server instance
-    net.createServer(function(sock) {
-
+    net.createServer(function (sock) {
         // console.log('\nClient connected');
-
         // Adding data event handler to socket
-        sock.on('data', function(data) {
-
+        sock.on('data', function (data) {
             // console.log('\nRequest from client sock.address().address:sock.address().port ' + sock.address().address + ':' + sock.address().port);
             // console.log('\nraw utf8');
             // console.log('\n' + data.toString('utf8'));
-
             var dataChunk = data.toString('utf8').split(' ');
             var requestUTF8 = '';
             var requestBase64 = '';
 
-            if(dataChunk.length > 1){
+            if (dataChunk.length > 1) {
                 // Remove / at beginning
-                if(dataChunk[1].substring(0, 1) == '/') {
+                if (dataChunk[1].substring(0, 1) === '/') {
                     dataChunk[1] = dataChunk[1].substring(1, dataChunk[1].length);
                 }
 
-                // Convert request to plain utf8
+                // Convert request into plain utf8
                 requestUTF8 = new Buffer(dataChunk[1], 'base64').toString('utf8');
 
                 // Checking for shutdown request
-                if(requestUTF8 == 'quit porky' || requestUTF8 == 'quit porky\n'){
+                if (requestUTF8 === 'quit porky' || requestUTF8 === 'quit porky\n') {
                     console.log('\nShutdown request received');
                     console.log('\nQuitting porky socket server (process.pid=' + process.pid + ')\n');
                     process.kill(process.pid);
                 }
-            }else{
-                // Proceeding
+            } else {
+                // More than 1 dataChunk: proceeding
                 requestBase64 = new Buffer(data, 'base64').toString('utf8');
-                requestUTF8 = new Buffer(requestBase64, 'base64').toString("utf8");
+                requestUTF8 = new Buffer(requestBase64, 'base64').toString('utf8');
             }
 
             // console.log('\nbase64 decoded');
             // console.log('\n' + requestUTF8);
-
-            // Convert GET request to JSON
+            // Parsing GET request: result is JSON
             var getRequestJSON;
-            try{
+            try {
                 getRequestJSON = JSON.parse(requestUTF8, true);
-            }catch(e){
+            } catch (e) {
                 console.log('\nError on JSON.parse() client request, invalid JSON: ' + e);
                 //sock.write('');
                 sock.end();
                 return;
             }
 
-            // Extracting values from JSON and fill variables
+            // Extracting values from JSON into variables
             var dataSourceType = getRequestJSON.porky.dataSourceType;
             var dataSourceServer = getRequestJSON.porky.dataSourceServer;
             var dataSourceName = getRequestJSON.porky.dataSourceName;
@@ -94,63 +84,102 @@ function porkyDataSourceAccess(){
             var dataSourcePassword = getRequestJSON.porky.dataSourcePassword;
             var dataSourceQuery = getRequestJSON.porky.dataSourceQuery;
 
+            var paths = dataSourceQuery.split('.');
             var chunkDataCollection = '';
             var tempJSONObject = '';
-            var paths = dataSourceQuery.split(".");
 
-            // Request a remote data source
-            if(dataSourceType == 'JSON'){            
-                request({
+
+
+            // JSON data source access, local or remote
+            if (dataSourceType === 'JSON') {
+                console.log('\nQuerying dataSourceServer + dataSourceName');
+                if ((dataSourceServer + dataSourceName).substring(0, 7) === 'http://' || (dataSourceServer + dataSourceName).substring(0, 8) === 'https://') {
+                    request({
                     method: 'GET',
                     uri: dataSourceServer + dataSourceName,
                     gzip: false
-                },
-                function (error, response, body) {
-                    // console.log(response.headers['content-encoding'])
-                    // console.log(body)
-                }).on('response', function(response) {
-                    console.log('\nQuerying dataSourceServer + dataSourceName');
-                    response.on('data', function(data) {
+                    }, function () {
+                    // (error, response, body)
+                    // console.log(response.headers['content-encoding']);
+                    // console.log(response.headers);
+                    }).on('response', function (response) {
+                    response.on('data', function (data) {
                         console.log('\nReceived data chunk: ' + data.length + ' bytes');
                         chunkDataCollection += data;
                     });
-                }).on('end', function(data) {
-                    // Parse result with dataSourceQuery
-                    if(dataSourceQuery !== ''){
-                        console.log('\nTrying to deep find ' + 'tempJSONObject.' + dataSourceQuery);
-
-                        try{
-                            // e.g. using the object tempJSONObject in combination with a passed over JSON path in dot notation 'rss.channel.0.title'
-                            tempJSONObject = JSON.parse(chunkDataCollection);
-
-                            // chunkDataCollection = JSON.stringify( eval('tempJSONObject' + dataSourceQuery) );
-
-                            for (var jsonPath = 0; jsonPath < paths.length; jsonPath++){
-                                tempJSONObject = tempJSONObject[paths[jsonPath]];
-                            }
-                            chunkDataCollection = JSON.stringify(tempJSONObject);
-
-                        }catch(e){
-                            console.log('\nError evaluating \'' + dataSourceQuery + '\'');
-                            console.log('\n' + e);
+                    }).on('end', function () {
+                    processJSON(chunkDataCollection);
+                    }).on('error', function (error) {
+                    console.log('\n' + error);
+                    sock.end();
+                    return;
+                    });
+                } else {
+                    fs.readFile(dataSourceServer + dataSourceName, 'utf8', function (err, data) {
+                        if (!err) {
+                            processJSON(data);
+                        } else {
+                            console.log(err);
                             sock.end();
                             return;
                         }
-                    }
-
-                    console.log('\n' + chunkDataCollection);
-                    socketWriteResult(chunkDataCollection);
-                });
+                    });
+                }
             }
 
-            if(dataSourceType == 'SQLite'){
+
+
+            // XML data source access, local or remote
+            if (dataSourceType == 'XML') {
+                console.log('\nQuerying dataSourceServer + dataSourceName');
+                if ((dataSourceServer + dataSourceName).substring(0, 7) === 'http://' || (dataSourceServer + dataSourceName).substring(0, 8) === 'https://') {
+                    request({
+                        method: 'GET',
+                        uri: dataSourceServer + dataSourceName,
+                        gzip: false
+                    }, function() {
+                        //(error, response, body)
+                        // console.log(response.headers['content-encoding'])
+                        // console.log(body)
+                    }).on('response', function(response) {
+                        response.on('data', function(data) {
+                            console.log('\nReceived data chunk: ' + data.length + ' bytes');
+                            chunkDataCollection += data;
+                        });
+                    }).on('end', function() {
+                        parseString(chunkDataCollection, function(err, result) {
+                            processJSON(JSON.stringify(result));
+                        });
+                    }).on('error', function(error) {
+                        console.log('\n' + error);
+                        sock.end();
+                        return;
+                    });
+                } else {
+                    fs.readFile(dataSourceServer + dataSourceName, 'utf8', function(err, data) {
+                        if (!err) {
+                            parseString(data, function(err, result) {
+                            processJSON(result);
+                            });
+                        } else {
+                            console.log(err);
+                            sock.end();
+                            return;
+                        }
+                    });
+                }
+            }
+
+
+            // SQLite local database file access
+            if (dataSourceType == 'SQLite') {
                 var db;
                 if (fs.existsSync(dataSourceName + dataSourceServer)) {
                     // Database file exists
                     // Load it
                     console.log('Using database: ' + dataSourceName + dataSourceServer);
                     db = new sqlite3.Database(dataSourceName + dataSourceServer);
-                }else {
+                } else {
                     // Database file does not exist
                     // Do nothing
                     console.log('Error: database file \'' + dataSourceName + dataSourceServer + '\' does not exist');
@@ -164,126 +193,81 @@ function porkyDataSourceAccess(){
                         socketWriteResult(chunkDataCollection);
                     });
                 });
-
                 db.close();
             }
 
-            if(dataSourceType == 'MySQL'){
 
-                    var connection = mysql.createConnection({
-                        database : dataSourceName,
-                        host     : dataSourceServer,
-                        user     : dataSourceUsername,
-                        password : dataSourcePassword
-                    });
-
-                    connection.connect();
-                    connection.query(dataSourceQuery, function(err, rows, fields) {
-                        if (err){
-                            console.log('\nError: Uncool connection!');
-                            console.log(err);
-                            sock.end();
-                            return;
-                        }
-
-                        // Return result
-                        chunkDataCollection = JSON.stringify(rows);
-
-                        socketWriteResult(chunkDataCollection);
-
-                    });
-
-                    connection.end();
-                    
-
-            }
-
-            if(dataSourceType == 'XML'){
-                request({
-                    method: 'GET',
-                    uri: dataSourceServer + dataSourceName,
-                    gzip: false
-                },
-                function (error, response, body) {
-                    // console.log(response.headers['content-encoding'])
-                    // console.log(body)
-                }).on('response', function(response) {
-                    console.log('\nQuerying dataSourceServer + dataSourceName');
-                    response.on('data', function(data) {
-                        console.log('\nReceived data chunk: ' + data.length + ' bytes');
-                        chunkDataCollection += data;
-                    });
-                }).on('end', function(data) {
-                    //xml2js
-                    parseString(chunkDataCollection, function (err, result) {
-                        // Entire result
-                        chunkDataCollection = JSON.stringify(result);
-
-                        // Parse result with dataSourceQuery
-                        if(dataSourceQuery !== ''){
-                            console.log('\nTrying to deep find ' + 'tempJSONObject.' + dataSourceQuery);
-
-                            try{
-                                // e.g. using the object tempJSONObject in combination with a passed over JSON path in dot notation 'rss.channel.0.title'
-                                tempJSONObject = JSON.parse(chunkDataCollection);
-
-                                // chunkDataCollection = JSON.stringify( eval('tempJSONObject' + dataSourceQuery) );
-
-                                for (var jsonPath = 0; jsonPath < paths.length; jsonPath++){
-                                    tempJSONObject = tempJSONObject[paths[jsonPath]];
-                                }
-                                chunkDataCollection = JSON.stringify(tempJSONObject);
-
-                            }catch(e){
-                                console.log('\nError evaluating \'' + dataSourceQuery + '\'');
-                                console.log('\n' + e);
-                                sock.end();
-                                return;
-                            }
-                        }
-
-                        console.log('\n' + chunkDataCollection);
-                        socketWriteResult(chunkDataCollection);
-                    });
+            // MySQL server database access
+            if (dataSourceType == 'MySQL') {
+                var connection = mysql.createConnection({
+                    database: dataSourceName,
+                    host: dataSourceServer,
+                    user: dataSourceUsername,
+                    password: dataSourcePassword
                 });
+                connection.connect();
+                connection.query(dataSourceQuery, function(err, rows) {
+                    //(err, rows, fields)
+                    if (err) {
+                        console.log('\nError: Uncool connection!');
+                        console.log(err);
+                        connection.end();
+                        sock.end();
+                        return;
+                    }
+                    // Return result
+                    chunkDataCollection = JSON.stringify(rows);
+                    connection.end();
+                    socketWriteResult(chunkDataCollection);
+                });
+
+                //connection.end();            
+
             }
 
-            if(dataSourceType == 'htmlToJSON' || dataSourceType == 'markdownToJSON'){
-                if(dataSourceType == 'markdownToJSON'){
-                    console.log('\nmarkdown parsing done, creating temporary HTML');
 
+
+            // HTML to JSON conversion
+            // Markdown to JSON conversion
+            if (dataSourceType == 'htmlToJSON' || dataSourceType == 'markdownToJSON') {
+                if (dataSourceType == 'markdownToJSON') {
+                    console.log('\nmarkdown parsing done, creating temporary HTML');
                     // in any case: dataSourceQuery content is forced to be HTML 
                     dataSourceQuery = markdown.toHTML(dataSourceQuery);
                 }
-
-                var handler = new htmlparser.DefaultHandler(function (error, dom) {
-                    if (error){
+                var handler = new htmlparser.DefaultHandler(function(error, dom) {
+                    if (error) {
                         console.log('\nError while parsing html');
                         sock.end();
                         return;
-                    }else{
+                    } else {
                         console.log('\nhtml parsing done, creating JSON');
                         chunkDataCollection = JSON.stringify(dom);
                         console.log(chunkDataCollection);
                         socketWriteResult(chunkDataCollection);
                     }
                 });
-
                 var parser = new htmlparser.Parser(handler);
                 parser.parseComplete(dataSourceQuery);
                 // sys.puts(sys.inspect(handler.dom, false, null));
             }
 
-            if(dataSourceType == 'markdownToHTML'){
+
+            // Markdown to HTML conversion
+            if (dataSourceType == 'markdownToHTML') {
                 var entities = new Entities();
-                brucedown(dataSourceQuery, function (err, dom) {
-                    chunkDataCollection = JSON.stringify({'html':entities.decode(dom)});
+                brucedown(dataSourceQuery, function(err, dom) {
+                    chunkDataCollection = JSON.stringify({
+                        'html': entities.decode(dom)
+                    });
                     console.log(chunkDataCollection);
                     socketWriteResult(chunkDataCollection);
                 });
             }
 
-            if(dataSourceType == 'consoleLog'){
+
+            // Client console.log
+            if (dataSourceType == 'consoleLog') {
                 console.log('\nClient console.log()\n');
                 console.log(dataSourceQuery);
                 console.log('\n');
@@ -292,55 +276,72 @@ function porkyDataSourceAccess(){
             }
 
 
-
-            if(dataSourceType != "SQLite" && dataSourceType != "MySQL" && dataSourceType != "XML" && dataSourceType != "JSON" && dataSourceType != "htmlToJSON" && dataSourceType != "markdownToJSON" && dataSourceType != "markdownToHTML" && dataSourceType != "consoleLog"){
+            // if dataSourceType is not supported
+            if (dataSourceType != 'SQLite' && dataSourceType != 'MySQL' && dataSourceType != 'XML' && dataSourceType != 'JSON' && dataSourceType != 'htmlToJSON' && dataSourceType != 'markdownToJSON' && dataSourceType != 'markdownToHTML' && dataSourceType != 'consoleLog') {
                 console.log('\nError: dataSourceType [' + dataSourceType + '] is not supported');
                 sock.end();
                 return;
             }
 
-        });
 
-        // Adding close event handler to this instance of socket
-        sock.on('close', function(data) {
-            //console.log('\nOK, connection closed');
-            console.log('\n**********************************\n');
-        });
-
-
-
-
-
-        // Writing results to client
-        function socketWriteResult(chunkDataCollection){
-            var resultAllJSON = '';
-            var resultBase64 = '';
-            // Validating via JSON.parse()
-            try{
-                resultAllJSON = JSON.parse(chunkDataCollection);
-            }catch(e){
-                console.log("\nError while parsing result!");
-                resultAllJSON = '';
-                console.log('Empty result should be [] not nothing!');
+            // Helper functions
+            // Deep finding JSON in path and processing the result
+            function processJSON(jsonString) {
+            // Parse result with dataSourceQuery
+            if (dataSourceQuery !== '') {
+                console.log('\nTrying to deep find ' + 'tempJSONObject.' + dataSourceQuery);
+                try {
+                    // e.g. using the object tempJSONObject in combination with a passed over JSON path in dot notation 'rss.channel.0.title'
+                    tempJSONObject = JSON.parse(jsonString);
+                    // jsonString = JSON.stringify( eval('tempJSONObject' + dataSourceQuery) );
+                    for (var jsonPath = 0; jsonPath < paths.length; jsonPath++) {
+                        tempJSONObject = tempJSONObject[paths[jsonPath]];
+                    }
+                    jsonString = JSON.stringify(tempJSONObject);
+                } catch (e) {
+                    console.log('\nError evaluating \'' + dataSourceQuery + '\'');
+                    console.log('\n' + e);
+                    sock.end();
+                    return;
+                }
+            }
+            console.log('\n' + jsonString);
+            socketWriteResult(jsonString);
             }
 
-            // Stringifying and base64 encoding before sending
-            resultAllJSON = JSON.stringify(resultAllJSON);
-            resultBase64 = new Buffer(resultAllJSON).toString('base64');
 
-            console.log('Responding to client');
-            // console.log('\nSending stringified & base64 encoded JSON to client');
-            // console.log('\n' + resultAllJSON);
+            // Writing results to client
+            function socketWriteResult(chunkDataCollection) {
+                var resultAllJSON = '';
+                var resultBase64 = '';
+                // Validating via JSON.parse()
+                try {
+                    resultAllJSON = JSON.parse(chunkDataCollection);
+                } catch (e) {
+                    console.log('\nError while parsing result!');
+                    resultAllJSON = '';
+                    console.log('Empty result should be [] not nothing!');
+                }
+                // Stringifying and base64 encoding before sending
+                resultAllJSON = JSON.stringify(resultAllJSON);
+                resultBase64 = new Buffer(resultAllJSON).toString('base64');
+                console.log('Responding to client');
+                // console.log('\nSending stringified & base64 encoded JSON to client');
+                // console.log('\n' + resultAllJSON);
+                sock.write(resultBase64);
+                sock.end();
+            }
+        });
 
-            sock.write(resultBase64);
-            sock.end();
-        }
 
+        // Adding close event handler to this instance of socket
+        sock.on('close', function() {
+            console.log('\n**********************************\n');
+        });
 
     }).listen(6789, '127.0.0.1');
 
     console.log('\n**********************************\nporky data source access interface\n**********************************\n');
-
 }
 
 porkyDataSourceAccess();
