@@ -84,7 +84,15 @@ function porkyDataSourceAccess() {
             var dataSourcePassword = getRequestJSON.porky.dataSourcePassword;
             var dataSourceQuery = getRequestJSON.porky.dataSourceQuery;
 
-            var paths = dataSourceQuery.split('.');
+            var paths;
+            try {
+                paths = dataSourceQuery.split('.');
+            }catch(e){
+                console.log('\nError on JSON.parse() client request, invalid dataSourceQuery: ' + e);
+                //sock.write('');
+                sock.end();
+                return;
+            }
             var chunkDataCollection = '';
             var tempJSONObject = '';
 
@@ -95,24 +103,24 @@ function porkyDataSourceAccess() {
                 console.log('\nQuerying dataSourceServer + dataSourceName');
                 if ((dataSourceServer + dataSourceName).substring(0, 7) === 'http://' || (dataSourceServer + dataSourceName).substring(0, 8) === 'https://') {
                     request({
-                    method: 'GET',
-                    uri: dataSourceServer + dataSourceName,
-                    gzip: false
+                        method: 'GET',
+                        uri: dataSourceServer + dataSourceName,
+                        gzip: false
                     }, function () {
-                    // (error, response, body)
-                    // console.log(response.headers['content-encoding']);
-                    // console.log(response.headers);
+                        // (error, response, body)
+                        // console.log(response.headers['content-encoding']);
+                        // console.log(response.headers);
                     }).on('response', function (response) {
-                    response.on('data', function (data) {
-                        console.log('\nReceived data chunk: ' + data.length + ' bytes');
-                        chunkDataCollection += data;
-                    });
+                        response.on('data', function (data) {
+                            console.log('\nReceived data chunk: ' + data.length + ' bytes');
+                            chunkDataCollection += data;
+                        });
                     }).on('end', function () {
-                    processJSON(chunkDataCollection);
+                        processJSON(chunkDataCollection);
                     }).on('error', function (error) {
-                    console.log('\n' + error);
-                    sock.end();
-                    return;
+                        console.log('\n' + error);
+                        sock.end();
+                        return;
                     });
                 } else {
                     fs.readFile(dataSourceServer + dataSourceName, 'utf8', function (err, data) {
@@ -158,8 +166,9 @@ function porkyDataSourceAccess() {
                 } else {
                     fs.readFile(dataSourceServer + dataSourceName, 'utf8', function(err, data) {
                         if (!err) {
+                            // console.log(data);
                             parseString(data, function(err, result) {
-                            processJSON(result);
+                                processJSON(JSON.stringify(result));
                             });
                         } else {
                             console.log(err);
@@ -287,26 +296,26 @@ function porkyDataSourceAccess() {
             // Helper functions
             // Deep finding JSON in path and processing the result
             function processJSON(jsonString) {
-            // Parse result with dataSourceQuery
-            if (dataSourceQuery !== '') {
-                console.log('\nTrying to deep find ' + 'tempJSONObject.' + dataSourceQuery);
-                try {
-                    // e.g. using the object tempJSONObject in combination with a passed over JSON path in dot notation 'rss.channel.0.title'
-                    tempJSONObject = JSON.parse(jsonString);
-                    // jsonString = JSON.stringify( eval('tempJSONObject' + dataSourceQuery) );
-                    for (var jsonPath = 0; jsonPath < paths.length; jsonPath++) {
-                        tempJSONObject = tempJSONObject[paths[jsonPath]];
+                // Parse result with dataSourceQuery
+                if (dataSourceQuery !== '') {
+                    console.log('\nTrying to deep find ' + 'tempJSONObject.' + dataSourceQuery);
+                    try {
+                        // e.g. using the object tempJSONObject in combination with a passed over JSON path in dot notation 'rss.channel.0.title'
+                        tempJSONObject = JSON.parse(jsonString);
+                        // jsonString = JSON.stringify( eval('tempJSONObject' + dataSourceQuery) );
+                        for (var jsonPath = 0; jsonPath < paths.length; jsonPath++) {
+                            tempJSONObject = tempJSONObject[paths[jsonPath]];
+                        }
+                        jsonString = JSON.stringify(tempJSONObject);
+                    } catch (e) {
+                        console.log('\nError evaluating \'' + dataSourceQuery + '\'');
+                        console.log('\n' + e);
+                        sock.end();
+                        return;
                     }
-                    jsonString = JSON.stringify(tempJSONObject);
-                } catch (e) {
-                    console.log('\nError evaluating \'' + dataSourceQuery + '\'');
-                    console.log('\n' + e);
-                    sock.end();
-                    return;
                 }
-            }
-            console.log('\n' + jsonString);
-            socketWriteResult(jsonString);
+                console.log('\nGot JSON...');
+                socketWriteResult(jsonString);
             }
 
 
@@ -325,7 +334,7 @@ function porkyDataSourceAccess() {
                 // Stringifying and base64 encoding before sending
                 resultAllJSON = JSON.stringify(resultAllJSON);
                 resultBase64 = new Buffer(resultAllJSON).toString('base64');
-                console.log('Responding to client');
+                console.log('Writing JSON result to client socket...');
                 // console.log('\nSending stringified & base64 encoded JSON to client');
                 // console.log('\n' + resultAllJSON);
                 sock.write(resultBase64);
