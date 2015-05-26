@@ -49,6 +49,9 @@ For details please contact us via anfrage@schreiber-freunde.de
 
 
 ## Changelog
+Version 0.3.4 (2015-05-26)
+* bugfix processJSON() parameter for local XML files
+
 Version 0.3.3 (2015-05-22)
 * adds support for local XML and JSON files
 * code cleanup
