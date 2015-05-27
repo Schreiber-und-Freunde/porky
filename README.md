@@ -49,6 +49,9 @@ For details please contact us via anfrage@schreiber-freunde.de
 
 
 ## Changelog
+Version 0.3.5 (2015-05-27)
+* code cleanup, integrates latest JSON-js library, replaces json_parse() with JSON.parse()
+
 Version 0.3.4 (2015-05-26)
 * bugfix processJSON() parameter for local XML files
 
