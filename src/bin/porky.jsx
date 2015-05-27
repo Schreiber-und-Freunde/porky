@@ -18,7 +18,6 @@
 */
 
 // Including external libraries
-//@include ../lib/json-js/json_parse.js
 //@include ../lib/json-js/json2.js
 //@include ../lib/base64/base64-encode-decode.js
 
@@ -53,7 +52,7 @@ console.log = function (message) {
             'dataSourceName': '',
             'dataSourceUsername': '',
             'dataSourcePassword': '',
-            'dataSourceQuery': Date() + '\n' + message
+            'dataSourceQuery': message
         }
     });
     consoleRequest = Base64.encode(consoleRequest);
@@ -545,7 +544,7 @@ function createPlaceholderImage(folder) {
     var placeholderImageFolder = '';
     if (folder === '' || folder === undefined) {
         placeholderImageFolder = new Folder(File($.fileName).parent);
-        console.log('placeholder image created in ' + File($.fileName).parent);
+        console.log('Placeholder image created in ' + File($.fileName).parent);
     } else {
         placeholderImageFolder = new Folder(folder);
     }
@@ -868,10 +867,10 @@ function readFile(fullFilePath) {
     if (fileIn.exists) {
         var fileContent = fileIn.read();
         fileIn.close();
-        console.log('File read:\n' + fullFilePath);
+        console.log('File read: ' + fullFilePath);
         return (fileContent.toString());
     } else {
-        console.log(fullFilePath + '\n\nError: File does not exist.');
+        console.log(fullFilePath + ' Error: File does not exist.');
         return false;
     }
 }
@@ -887,11 +886,11 @@ function writeFile(fullFilePath, fileContent, lineEnding) {
         }
         fileOut.lineFeed = lineEnding;
         fileOut.write(fileContent);
-        console.log('File written:\n' + fullFilePath);
+        console.log('File written: ' + fullFilePath);
         fileOut.close();
         return true;
     } else {
-        console.log(fullFilePath + '\n\nError: File does not exist.');
+        console.log(fullFilePath + ' Error: File does not exist.');
         return false;
     }
 }

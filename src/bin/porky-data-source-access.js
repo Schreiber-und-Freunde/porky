@@ -54,7 +54,7 @@ function porkyDataSourceAccess() {
                 // Checking for shutdown request
                 if (requestUTF8 === 'quit porky' || requestUTF8 === 'quit porky\n') {
                     console.log('\nShutdown request received');
-                    console.log('\nQuitting porky socket server (process.pid=' + process.pid + ')\n');
+                    console.log('\nQuitting porky data source access interface (process.pid=' + process.pid + ')\n');
                     process.kill(process.pid);
                 }
             } else {
@@ -116,6 +116,7 @@ function porkyDataSourceAccess() {
                             chunkDataCollection += data;
                         });
                     }).on('end', function () {
+                    	console.log('\nGot all chunks, starting to process result');
                         processJSON(chunkDataCollection);
                     }).on('error', function (error) {
                         console.log('\n' + error);
@@ -127,7 +128,7 @@ function porkyDataSourceAccess() {
                         if (!err) {
                             processJSON(data);
                         } else {
-                            console.log(err);
+                            console.log('\n' + err);
                             sock.end();
                             return;
                         }
@@ -155,6 +156,7 @@ function porkyDataSourceAccess() {
                             chunkDataCollection += data;
                         });
                     }).on('end', function() {
+                    	console.log('\nGot all chunks, starting to process result');
                         parseString(chunkDataCollection, function(err, result) {
                             processJSON(JSON.stringify(result));
                         });
@@ -171,7 +173,7 @@ function porkyDataSourceAccess() {
                                 processJSON(JSON.stringify(result));
                             });
                         } else {
-                            console.log(err);
+                            console.log('\n' + err);
                             sock.end();
                             return;
                         }
@@ -186,12 +188,12 @@ function porkyDataSourceAccess() {
                 if (fs.existsSync(dataSourceName + dataSourceServer)) {
                     // Database file exists
                     // Load it
-                    console.log('Using database: ' + dataSourceName + dataSourceServer);
+                    console.log('\nUsing database: ' + dataSourceName + dataSourceServer);
                     db = new sqlite3.Database(dataSourceName + dataSourceServer);
                 } else {
                     // Database file does not exist
                     // Do nothing
-                    console.log('Error: database file \'' + dataSourceName + dataSourceServer + '\' does not exist');
+                    console.log('\nError: database file \'' + dataSourceName + dataSourceServer + '\' does not exist');
                     sock.end();
                     return;
                 }
@@ -219,7 +221,7 @@ function porkyDataSourceAccess() {
                     //(err, rows, fields)
                     if (err) {
                         console.log('\nError: Uncool connection!');
-                        console.log(err);
+                        console.log('\n' + err);
                         connection.end();
                         sock.end();
                         return;
@@ -241,18 +243,18 @@ function porkyDataSourceAccess() {
             if (dataSourceType == 'htmlToJSON' || dataSourceType == 'markdownToJSON') {
                 if (dataSourceType == 'markdownToJSON') {
                     console.log('\nmarkdown parsing done, creating temporary HTML');
-                    // in any case: dataSourceQuery content is forced to be HTML 
                     dataSourceQuery = markdown.toHTML(dataSourceQuery);
                 }
+                // in any case: dataSourceQuery content is HTML 
                 var handler = new htmlparser.DefaultHandler(function(error, dom) {
                     if (error) {
-                        console.log('\nError while parsing html');
+                        console.log('\nError while parsing HTML');
                         sock.end();
                         return;
                     } else {
-                        console.log('\nhtml parsing done, creating JSON');
+                        console.log('\nHTML parsing done, creating JSON');
                         chunkDataCollection = JSON.stringify(dom);
-                        console.log(chunkDataCollection);
+                        // console.log(chunkDataCollection);
                         socketWriteResult(chunkDataCollection);
                     }
                 });
@@ -269,7 +271,8 @@ function porkyDataSourceAccess() {
                     chunkDataCollection = JSON.stringify({
                         'html': entities.decode(dom)
                     });
-                    console.log(chunkDataCollection);
+                    console.log('\nmarkdown parsing done, creating HTML');
+                    // console.log(chunkDataCollection);
                     socketWriteResult(chunkDataCollection);
                 });
             }
@@ -277,9 +280,8 @@ function porkyDataSourceAccess() {
 
             // Client console.log
             if (dataSourceType == 'consoleLog') {
-                console.log('\nClient console.log()\n');
-                console.log(dataSourceQuery);
-                console.log('\n');
+                dataSourceQuery = dataSourceQuery.replace(/\n/g, ' ').replace(/\r/g, ' ').replace(/\t/g, ' ');
+                console.log('\n    Client console.log()' + '\n    Timestamp: ' + Date.now() + '\n    Message: ' + dataSourceQuery);
                 sock.write(new Buffer('true').toString('base64'));
                 sock.end();
             }
@@ -287,7 +289,7 @@ function porkyDataSourceAccess() {
 
             // if dataSourceType is not supported
             if (dataSourceType != 'SQLite' && dataSourceType != 'MySQL' && dataSourceType != 'XML' && dataSourceType != 'JSON' && dataSourceType != 'htmlToJSON' && dataSourceType != 'markdownToJSON' && dataSourceType != 'markdownToHTML' && dataSourceType != 'consoleLog') {
-                console.log('\nError: dataSourceType [' + dataSourceType + '] is not supported');
+                console.log('\nError: dataSourceType \'' + dataSourceType + '\' is not supported');
                 sock.end();
                 return;
             }
@@ -298,7 +300,7 @@ function porkyDataSourceAccess() {
             function processJSON(jsonString) {
                 // Parse result with dataSourceQuery
                 if (dataSourceQuery !== '') {
-                    console.log('\nTrying to deep find ' + 'tempJSONObject.' + dataSourceQuery);
+                    console.log('\nTrying to deep find {Object}.' + dataSourceQuery);
                     try {
                         // e.g. using the object tempJSONObject in combination with a passed over JSON path in dot notation 'rss.channel.0.title'
                         tempJSONObject = JSON.parse(jsonString);
@@ -327,14 +329,14 @@ function porkyDataSourceAccess() {
                 try {
                     resultAllJSON = JSON.parse(chunkDataCollection);
                 } catch (e) {
-                    console.log('\nError while parsing result!');
                     resultAllJSON = '';
-                    console.log('Empty result should be [] not nothing!');
+                    console.log('\nError while parsing empty result!');
+                    console.log('\nResult should be [] not nothing!');
                 }
                 // Stringifying and base64 encoding before sending
                 resultAllJSON = JSON.stringify(resultAllJSON);
                 resultBase64 = new Buffer(resultAllJSON).toString('base64');
-                console.log('Writing JSON result to client socket...');
+                console.log('\nWriting JSON result to client socket...');
                 // console.log('\nSending stringified & base64 encoded JSON to client');
                 // console.log('\n' + resultAllJSON);
                 sock.write(resultBase64);
@@ -345,12 +347,12 @@ function porkyDataSourceAccess() {
 
         // Adding close event handler to this instance of socket
         sock.on('close', function() {
-            console.log('\n**********************************\n');
+            console.log('\n---');
         });
 
     }).listen(6789, '127.0.0.1');
 
-    console.log('\n**********************************\nporky data source access interface\n**********************************\n');
+    console.log('\n**************************************\n* porky data source access interface *\n**************************************\n');
 }
 
 porkyDataSourceAccess();

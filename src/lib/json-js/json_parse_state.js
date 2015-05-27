@@ -1,6 +1,6 @@
 /*
     json_parse_state.js
-    2013-05-26
+    2015-05-02
 
     Public Domain.
 
@@ -46,13 +46,13 @@
     NOT CONTROL.
 */
 
-/*jslint regexp: true, unparam: true */
+/*jslint for */
 
-/*members "", "\"", ",", "\/", ":", "[", "\\", "]", acomma, avalue, b,
-    call, colon, container, exec, f, false, firstavalue, firstokey,
-    fromCharCode, go, hasOwnProperty, key, length, n, null, ocomma, okey,
-    ovalue, pop, prototype, push, r, replace, slice, state, t, test, true,
-    value, "{", "}"
+/*property
+    acomma, avalue, b, call, colon, container, exec, f, false, firstavalue,
+    firstokey, fromCharCode, go, hasOwnProperty, key, length, n, null, ocomma,
+    okey, ovalue, pop, prototype, push, r, replace, slice, state, t, test,
+    true
 */
 
 var json_parse = (function () {
@@ -287,8 +287,10 @@ var json_parse = (function () {
 
 // Remove and replace any backslash escapement.
 
-        return text.replace(/\\(?:u(.{4})|([^u]))/g, function (a, b, c) {
-            return b ? String.fromCharCode(parseInt(b, 16)) : escapes[c];
+        return text.replace(/\\(?:u(.{4})|([^u]))/g, function (ignore, b, c) {
+            return b
+                ? String.fromCharCode(parseInt(b, 16))
+                : escapes[c];
         });
     }
 
@@ -297,8 +299,8 @@ var json_parse = (function () {
 // A regular expression is used to extract tokens from the JSON text.
 // The extraction process is cautious.
 
-        var r,          // The result of the exec method.
-            tx = /^[\x20\t\n\r]*(?:([,:\[\]{}]|true|false|null)|(-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|"((?:[^\r\n\t\\\"]|\\(?:["\\\/trnfb]|u[0-9a-fA-F]{4}))*)")/;
+        var result,
+            tx = /^[\u0020\t\n\r]*(?:([,:\[\]{}]|true|false|null)|(-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|"((?:[^\r\n\t\\\"]|\\(?:["\\\/trnfb]|u[0-9a-fA-F]{4}))*)")/;
 
 // Set the starting state.
 
@@ -315,37 +317,37 @@ var json_parse = (function () {
 
 // For each token...
 
-            for (;;) {
-                r = tx.exec(source);
-                if (!r) {
+            while (true) {
+                result = tx.exec(source);
+                if (!result) {
                     break;
                 }
 
-// r is the result array from matching the tokenizing regular expression.
-//  r[0] contains everything that matched, including any initial whitespace.
-//  r[1] contains any punctuation that was matched, or true, false, or null.
-//  r[2] contains a matched number, still in string form.
-//  r[3] contains a matched string, without quotes but with escapement.
+// result is the result array from matching the tokenizing regular expression.
+//  result[0] contains everything that matched, including any initial whitespace.
+//  result[1] contains any punctuation that was matched, or true, false, or null.
+//  result[2] contains a matched number, still in string form.
+//  result[3] contains a matched string, without quotes but with escapement.
 
-                if (r[1]) {
+                if (result[1]) {
 
 // Token: Execute the action for this state and token.
 
-                    action[r[1]][state]();
+                    action[result[1]][state]();
 
-                } else if (r[2]) {
+                } else if (result[2]) {
 
 // Number token: Convert the number string into a number value and execute
 // the action for this state and number.
 
-                    value = +r[2];
+                    value = +result[2];
                     number[state]();
                 } else {
 
 // String token: Replace the escapement sequences and execute the action for
 // this state and string.
 
-                    value = debackslashify(r[3]);
+                    value = debackslashify(result[3]);
                     string[state]();
                 }
 
@@ -353,7 +355,7 @@ var json_parse = (function () {
 // are tokens. This is a slow process, but it allows the use of ^ matching,
 // which assures that no illegal tokens slip through.
 
-                source = source.slice(r[0].length);
+                source = source.slice(result[0].length);
             }
 
 // If we find a state/token combination that is illegal, then the action will
@@ -367,8 +369,10 @@ var json_parse = (function () {
 // remaining source contains anything except whitespace, then we did not have
 //a well-formed JSON text.
 
-        if (state !== 'ok' || /[^\x20\t\n\r]/.test(source)) {
-            throw state instanceof SyntaxError ? state : new SyntaxError('JSON');
+        if (state !== 'ok' || (/[^\u0020\t\n\r]/.test(source))) {
+            throw state instanceof SyntaxError
+                ? state
+                : new SyntaxError('JSON');
         }
 
 // If there is a reviver function, we recursively walk the new structure,
@@ -377,21 +381,23 @@ var json_parse = (function () {
 // value in an empty key. If there is not a reviver function, we simply return
 // that value.
 
-        return typeof reviver === 'function' ? (function walk(holder, key) {
-            var k, v, value = holder[key];
-            if (value && typeof value === 'object') {
-                for (k in value) {
-                    if (Object.prototype.hasOwnProperty.call(value, k)) {
-                        v = walk(value, k);
-                        if (v !== undefined) {
-                            value[k] = v;
-                        } else {
-                            delete value[k];
+        return typeof reviver === 'function'
+            ? (function walk(holder, key) {
+                var k, v, value = holder[key];
+                if (value && typeof value === 'object') {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = walk(value, k);
+                            if (v !== undefined) {
+                                value[k] = v;
+                            } else {
+                                delete value[k];
+                            }
                         }
                     }
                 }
-            }
-            return reviver.call(holder, key, value);
-        }({'': value}, '')) : value;
+                return reviver.call(holder, key, value);
+            }({'': value}, ''))
+            : value;
     };
 }());
