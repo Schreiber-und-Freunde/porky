@@ -49,6 +49,9 @@ For details please contact us via anfrage@schreiber-freunde.de
 
 
 ## Changelog
+Version 0.3.5 (2015-05-29)
+* improves error handling in syncXMLElement(), code cleanup
+
 Version 0.3.5 (2015-05-27)
 * code cleanup, integrates latest JSON-js library, replaces json_parse() with JSON.parse()
 
