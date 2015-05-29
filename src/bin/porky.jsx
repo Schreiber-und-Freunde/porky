@@ -407,6 +407,10 @@ function recursiveSetSyncIdentifier(taggedObject, syncIdentifier) {
 
 
 function syncXMLElement(taggedXMLElement) {
+    if(!settings.sync.scriptFolder || settings.sync.scriptFolder === ''){
+        console.log('Error: global object settings.sync.scriptFolder ist invalid or empty but must be set before syncing');
+        return false;
+    }
     // if not [object XMLElement] then use the object's associatedXMLElement
     if (taggedXMLElement != '[object XMLElement]') {
         if (taggedXMLElement == '[object Table]' || taggedXMLElement == '[object TextFrame]' || taggedXMLElement == '[object Rectangle]' || taggedXMLElement == '[object Image]' || taggedXMLElement == '[object Story]') {
@@ -437,8 +441,8 @@ function syncXMLElement(taggedXMLElement) {
                             return taggedXMLElement;
                         } catch (e) {
                             // content not syncable or already done by external syncScript
-                            // $.writeln('taggedXMLElement.xmlContent.place(): ' + e);
-                            return e;
+                            console.log('Error: global object settings.sync.scriptFolder + xmlAttributes.item(\'syncScript\').value ' + e);
+                            return false;
                         }
                     }
                     // handle text
@@ -454,8 +458,8 @@ function syncXMLElement(taggedXMLElement) {
                                 return taggedXMLElement;
                             } catch (e) {
                                 // content not syncable or already done by external syncScript
-                                // $.writeln('taggedXMLElement.contents = : ' + e);
-                                return e;
+                                console.log('Error: global object settings.sync.scriptFolder + xmlAttributes.item(\'syncScript\').value ' + e);
+                                return false;
                             }
                         }
                         // if table
@@ -508,14 +512,16 @@ function syncXMLElement(taggedXMLElement) {
                                 return taggedXMLElement;
                             } catch (e) {
                                 // content not syncable or already done by external syncScript
-                                // $.writeln('content not syncable or already done by external syncScript : ' + e);
-                                return e;
+                                console.log(e);
+                                return false;
                             }
                         } else {
+                            console.log('Error: tables.length !> 0');
                             return false;
                         }
                     }
                 } else {
+                    console.log('Error: invalid xmlAttributes.item(\'syncScript\') or invalid xmlAttributes.item(\'syncIdentifier\')!');
                     return false;
                 }
             }
@@ -527,7 +533,7 @@ function syncXMLElement(taggedXMLElement) {
 function recursiveSyncXMLElement(taggedXMLElement) {
     if (taggedXMLElement == '[object XMLElement]') {
         syncXMLElement(taggedXMLElement);
-        //Sub Elemente
+        //Sub Elements
         for (var i = 0; i < taggedXMLElement.xmlElements.length; i++) {
             recursiveSyncXMLElement(taggedXMLElement.xmlElements[i]);
         }
@@ -897,6 +903,7 @@ function writeFile(fullFilePath, fileContent, lineEnding) {
 
 
 function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
+
     /*
     targetObject is the object where the content of htmlText is placed via InDesign place() tagged text function
 
@@ -1016,12 +1023,14 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
     var isClosed = porkyTempHTMLFile.close();
     // place tagged text, InDesign will do the formatting automatically based on existing styles
     try {
+        // place temp tagged text file
         targetObject.place(porkyTempHTMLFile);
+        // and remove it
+        porkyTempHTMLFile.remove();
     } catch (e) {
+        console.log('Error: cannot place html file! ' + e);
         return false;
     }
-    // remove temp file
-    porkyTempHTMLFile.remove();
     return targetObject;
 }
 
