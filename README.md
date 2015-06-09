@@ -49,6 +49,9 @@ For details please contact us via anfrage@schreiber-freunde.de
 
 
 ## Changelog
+Version 0.3.6 (2015-06-09)
+* improves error handling for ESTK part of lib
+
 Version 0.3.5 (2015-05-29)
 * improves error handling in syncXMLElement(), code cleanup
 
