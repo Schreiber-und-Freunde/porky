@@ -116,65 +116,80 @@ function connectToDataSource(dataSourceQuery) {
 // porky core functions for Adobe InDesign
 
 function addFrame(xFrame, yFrame, wFrame, hFrame, stringOrFile) {
-    var tempFrame = app.activeWindow.activePage.rectangles.add();
-    var tempXFrame = xFrame;
-    var tempYFrame = yFrame;
-    var tempWFrame = wFrame + xFrame;
-    var tempHFrame = hFrame + yFrame;
-    tempFrame.geometricBounds = [tempYFrame, tempXFrame, tempHFrame, tempWFrame];
-    if (typeof(stringOrFile) == 'string') {
-        tempFrame.contentType = 1952412773;
-        tempFrame.getElements()[0].contents = stringOrFile;
-        return tempFrame.getElements()[0];
-    }
-    if (typeof(stringOrFile) == 'object') {
-        var tempPic = new File(stringOrFile);
-        tempFrame.place(tempPic, false);
-        return tempFrame;
+    try{
+        var tempFrame = app.activeWindow.activePage.rectangles.add();
+        var tempXFrame = xFrame;
+        var tempYFrame = yFrame;
+        var tempWFrame = wFrame + xFrame;
+        var tempHFrame = hFrame + yFrame;
+        tempFrame.geometricBounds = [tempYFrame, tempXFrame, tempHFrame, tempWFrame];
+
+        if (typeof(stringOrFile) == 'string') {
+            tempFrame.contentType = 1952412773;
+            tempFrame.getElements()[0].contents = stringOrFile;
+            console.log('Frame added');
+            return tempFrame.getElements()[0];
+        }
+
+        if (typeof(stringOrFile) == 'object') {
+            var tempPic = new File(stringOrFile);
+            tempFrame.place(tempPic, false);
+            console.log('Frame added');
+            return tempFrame;
+        }
+    }catch(e){
+        console.log(e);
     }
 }
 
 
 function appendToFrame(frameObject, stringOrFileOrTwoDArray) {
-    if (typeof(stringOrFileOrTwoDArray) == 'object') {
-        // array -> create and append table
-        if (stringOrFileOrTwoDArray instanceof Array) {
-            //Höchste Anzahl benötigter Spalten herausfinden
-            var colMaxCount = [];
-            for (var i = 0; i < stringOrFileOrTwoDArray.length; i++) {
-                colMaxCount[i] = stringOrFileOrTwoDArray[i].length;
+    try{
+        if (typeof(stringOrFileOrTwoDArray) == 'object') {
+            // array -> create and append table
+            if (stringOrFileOrTwoDArray instanceof Array) {
+                //Höchste Anzahl benötigter Spalten herausfinden
+                var colMaxCount = [];
+                for (var i = 0; i < stringOrFileOrTwoDArray.length; i++) {
+                    colMaxCount[i] = stringOrFileOrTwoDArray[i].length;
+                }
+                //Hilfsfunktion zum Zahlen sortieren
+                function numsort(a, b) {
+                    return b - a;
+                }
+                //Höchster Spaltenwert
+                colMaxCount = colMaxCount.sort(numsort)[0];
+                //Erste Zeile mit 1 Zelle exemplarisch anlegen
+                var tempAppendedTable = frameObject.tables.add();
+                tempAppendedTable.columnCount = colMaxCount; //Limit: 200
+                tempAppendedTable.bodyRowCount = 1;
+                //Inhaltszeilen anlegen
+                for (var k = 0; k < stringOrFileOrTwoDArray.length; k++) {
+                    tempAppendedTable.rows[k].contents = stringOrFileOrTwoDArray[k];
+                    tempAppendedTable.rows.add();
+                }
+                //Letzte leere Zeile entfernen
+                tempAppendedTable.rows.lastItem().remove();
+                console.log('Table appended');
+                return tempAppendedTable;
+            } else {
+                // not an array -> file -> append/place inline file object
+                var tempPic = new File(stringOrFileOrTwoDArray);
+                // var tempAppendedPic = frameObject.parentStory.insertionPoints[-1].place (tempPic, false, {visibleBounds:['0 mm','0 mm','10 mm','10 mm']});
+                var tempAppendedPic = frameObject.parentStory.insertionPoints[-1].place(tempPic, false);
+                // return parent container [object Rectangle] of image
+                console.log('Image appended');
+                return tempAppendedPic[0].parent;
             }
-            //Hilfsfunktion zum Zahlen sortieren
-            function numsort(a, b) {
-                return b - a;
-            }
-            //Höchster Spaltenwert
-            colMaxCount = colMaxCount.sort(numsort)[0];
-            //Erste Zeile mit 1 Zelle exemplarisch anlegen
-            var tempAppendedTable = frameObject.tables.add();
-            tempAppendedTable.columnCount = colMaxCount; //Limit: 200
-            tempAppendedTable.bodyRowCount = 1;
-            //Inhaltszeilen anlegen
-            for (var k = 0; k < stringOrFileOrTwoDArray.length; k++) {
-                tempAppendedTable.rows[k].contents = stringOrFileOrTwoDArray[k];
-                tempAppendedTable.rows.add();
-            }
-            //Letzte leere Zeile entfernen
-            tempAppendedTable.rows.lastItem().remove();
-            return tempAppendedTable;
-        } else {
-            // not an array -> file -> append/place inline file object
-            var tempPic = new File(stringOrFileOrTwoDArray);
-            // var tempAppendedPic = frameObject.parentStory.insertionPoints[-1].place (tempPic, false, {visibleBounds:['0 mm','0 mm','10 mm','10 mm']});
-            var tempAppendedPic = frameObject.parentStory.insertionPoints[-1].place(tempPic, false);
-            // return parent container [object Rectangle] of image
-            return tempAppendedPic[0].parent;
+        } else if (typeof(stringOrFileOrTwoDArray) == 'string') {
+            // string -> append string
+            frameObject.parentStory.insertionPoints[-1].contents = stringOrFileOrTwoDArray;
+            var tempAppendedText = frameObject.parentStory.characters.itemByRange(-1, -stringOrFileOrTwoDArray.length);
+            console.log('String appended');
+            return tempAppendedText;
         }
-    } else if (typeof(stringOrFileOrTwoDArray) == 'string') {
-        // string -> append string
-        frameObject.parentStory.insertionPoints[-1].contents = stringOrFileOrTwoDArray;
-        var tempAppendedText = frameObject.parentStory.characters.itemByRange(-1, -stringOrFileOrTwoDArray.length);
-        return tempAppendedText;
+    }catch(e){
+        console.log(e);
     }
 }
 
@@ -202,6 +217,7 @@ function tagThis(tagObject, syncScript, syncIdentifier) {
         } else {
             assXMLElem.xmlAttributes.item('syncIdentifier').value = syncIdentifier;
         }
+        console.log(tagObject + ' tagged');
         return assXMLElem; //XML Element zurückgeben
     }
     // Rectangle
@@ -220,6 +236,7 @@ function tagThis(tagObject, syncScript, syncIdentifier) {
         } else {
             assXMLElem.xmlAttributes.item('syncIdentifier').value = syncIdentifier;
         }
+        console.log(tagObject + ' tagged');
         return assXMLElem; //XML Element zurückgeben
     }
     if (tagObject == '[object Word]' || tagObject == '[object Paragraph]' || tagObject == '[object InsertionPoint]' || tagObject == '[object Character]' || tagObject == '[object Text]' || tagObject == '[object TextColumn]') {
@@ -230,7 +247,7 @@ function tagThis(tagObject, syncScript, syncIdentifier) {
                 app.activeDocument.xmlElements.item(0).xmlElements.add(tempTagName, tagObject.parent[0]);
             } catch (e) {
                 // $.writeln('tagObject.parent -> cannot add xmlElements.add(): ' + e);
-                //alert(e);
+                console.log(e);
             }
         }
         //Bei selection[0]
@@ -240,7 +257,7 @@ function tagThis(tagObject, syncScript, syncIdentifier) {
                 app.activeDocument.xmlElements.item(0).xmlElements.add(tempTagName, tagObject.parent);
             } catch (e) {
                 // $.writeln('!tagObject.parent -> cannot add xmlElements.add(): ' + e);
-                //alert(e);
+                console.log(e);
             }
         }
         if (tagObject.parent == '[object Story]') {
@@ -252,11 +269,12 @@ function tagThis(tagObject, syncScript, syncIdentifier) {
                 }
             } catch (e) {
                 // $.writeln('tagObject.parent = [object Story]-> cannot associatedXMLElements[0].untag(): ' + e);
-                //alert(e);
+                console.log(e);
             }
             tagObject = app.activeDocument.xmlElements.item(0).xmlElements.add(tempTagName, tagObject);
             tagObject.xmlAttributes.add('syncScript', syncScript);
             tagObject.xmlAttributes.add('syncIdentifier', syncIdentifier);
+            console.log(tagObject + ' tagged');
             return tagObject; //XML Element zurückgeben
         }
         // Text selection inside of table cell
@@ -269,13 +287,15 @@ function tagThis(tagObject, syncScript, syncIdentifier) {
                     tagObject.associatedXMLElements[0].untag();
                 }
             } catch (e) {
-                // alert(e);
+                console.log(e);
             }
             tagObject = app.activeDocument.xmlElements.item(0).xmlElements.add(tempTagName, tagObject);
             tagObject.xmlAttributes.add('syncScript', syncScript);
             tagObject.xmlAttributes.add('syncIdentifier', syncIdentifier);
+            console.log(tagObject + ' tagged');
             return tagObject; //XML Element zurückgeben
         } else {
+            console.log(tagObject + ' tagged');
             return tagObject;
         }
     }
@@ -289,17 +309,19 @@ function tagThis(tagObject, syncScript, syncIdentifier) {
             }
         } catch (e) {
             // $.writeln('tagObject = [object Table]-> cannot associatedXMLElement.untag(): ' + e);
-            //alert(e);
+            console.log(e);
         }
         tagObject = app.activeDocument.xmlElements.item(0).xmlElements.add(tempTagName, tagObject);
         tagObject.xmlAttributes.add('syncScript', syncScript);
         tagObject.xmlAttributes.add('syncIdentifier', syncIdentifier);
+        console.log(tagObject + ' tagged');
         return tagObject; //XML Element zurückgeben
     }
     // Table cell ***
     if (tagObject == '[object Cell]') {
-        alert('[object Cell] is not supported');
+        console.log(tagObject + ' is not supported');
     } else {
+        console.log(tagObject + ' tagged');
         return tagObject;
     }
 }
@@ -345,7 +367,7 @@ function setSyncIdentifier(singleTaggedObject, syncIdentifier) {
         return singleTaggedObject;
     } catch (e) {
         // $.writeln('setSyncIdentifier(singleTaggedObject, syncIdentifier): ' + e);
-        alert('Error\nCannot set ' + syncIdentifier + '\n' + e);
+        console.log('Error: Cannot set ' + syncIdentifier + ' ' + e);
         return false;
     }
 }
@@ -387,7 +409,7 @@ function recursiveSetSyncIdentifier(taggedObject, syncIdentifier) {
         return taggedObject;
     } catch (e) {
         // $.writeln('recursiveSetSyncIdentifier(taggedObject, syncIdentifier): ' + e);
-        alert('Error\nCannot set ' + syncIdentifier + '\n' + e);
+        console.log('Error: Cannot set ' + syncIdentifier + ' ' + e);
         return false;
     }
     /*
@@ -441,7 +463,7 @@ function syncXMLElement(taggedXMLElement) {
                             return taggedXMLElement;
                         } catch (e) {
                             // content not syncable or already done by external syncScript
-                            console.log('Error: global object settings.sync.scriptFolder + xmlAttributes.item(\'syncScript\').value ' + e);
+                            console.log('Error: \'' + taggedXMLElement.xmlAttributes.item('syncIdentifier').value + '\' global object settings.sync.scriptFolder + xmlAttributes.item(\'syncScript\').value ' + e);
                             return false;
                         }
                     }
@@ -458,7 +480,7 @@ function syncXMLElement(taggedXMLElement) {
                                 return taggedXMLElement;
                             } catch (e) {
                                 // content not syncable or already done by external syncScript
-                                console.log('Error: global object settings.sync.scriptFolder + xmlAttributes.item(\'syncScript\').value ' + e);
+                                console.log('Warning: Content not syncable or already synced. ' + e + ' syncIdentifier: \"' + taggedXMLElement.xmlAttributes.item('syncIdentifier').value + '\" syncScript: \"' + unescape(settings.sync.scriptFolder + taggedXMLElement.xmlAttributes.item('syncScript').value) + '\"');
                                 return false;
                             }
                         }
@@ -657,7 +679,7 @@ function resetCharacterStyle(textObject) {
         app.activeDocument.characterStyles.item(tempNoneStyleName).remove();
     } catch (e) {
         // $.writeln('cannot app.activeDocument.characterStyles.item(tempNoneStyleName).remove(): ' + e);
-        //alert(e);
+        console.log(e);
     }
     var noneStyle = app.activeDocument.characterStyles.item(0);
     var basedOnNone = app.activeDocument.characterStyles.add({
@@ -726,6 +748,7 @@ function fitTextboxHeightAndThread(frameObject, xNextFrame, yNextFrame, wNextFra
             // try if nextTextFrame needs to be resized; use same resizing values as before
             fitTextboxHeightAndThread(frameObject.nextTextFrame, xNextFrame, yNextFrame, wNextFrame, hNextFrame);
         } catch (e) {
+            console.log(e);
             return false;
         }
     }
@@ -757,7 +780,7 @@ function httpGetBinaryFile(httpSourceFileURL, httpSourcePort, targetFolder) {
         tempTargetFile.close();
         return tempTargetFile;
     } else {
-        // exit if connection is not possible
+        console.log('Error: http connection not possible');
         return false;
     }
     // internal helper functions
@@ -925,6 +948,9 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
     var tempParaNoneStyle = tempParaStyles.item(0);
     // a few standard html cleanups
     htmlText = htmlText.replace(/\n/g, '');
+    htmlText = htmlText.replace(/<br>/g, '[LF]');
+    htmlText = htmlText.replace(/<br\/>/g, '[LF]');
+    htmlText = htmlText.replace(/<br \/>/g, '[LF]');
     htmlText = htmlText.replace(/\r/g, '');
     htmlText = htmlText.replace(/\r\n/g, '');
     htmlText = htmlText.replace(/ style="(.*?)"/g, '');
@@ -932,6 +958,7 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
     htmlText = htmlText.replace(/ class="(.*?)"/g, '');
     htmlText = htmlText.replace(/ name="(.*?)"/g, '');
     htmlText = htmlText.replace(/ alt="(.*?)"/g, '');
+    htmlText = htmlText.replace(/<a href=".*?">/g, '<a>').replace(/<\/a>/g, '');
     // iterate html styles array
     for (var i in inlineStyles) {
         // tempCharStyles.everyItem().name.join().indexOf(inlineStyles[i])
@@ -942,12 +969,13 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
                 basedOn: tempCharNoneStyle
             });
         } catch (e) {
-            // alert(e);
+            console.log(e);
         }
         // parse htmlText and create tagged text
-        if (inlineStyles[i] == 'a') {
-            htmlText = htmlText.replace(/<a href=".*?"> /g, '').replace(/<\/a>/g, '');
-        } else if (inlineStyles[i] == 'img') {
+        // if (inlineStyles[i] == 'a') {
+        //     htmlText = htmlText.replace(/<a href=".*?">/g, '<a>').replace(/<\/a>/g, '');
+        // } else 
+        if (inlineStyles[i] == 'img') {
             // clean up html tag
             // htmlText = htmlText.replace(/<img src="(.*?)" (.*?)>/g, '[porky-img]$1[/porky-img]');
             htmlText = htmlText.replace(/<img src="(.*?)">/g, '[img]$1[/img]');
@@ -976,7 +1004,7 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
                 basedOn: tempParaNoneStyle
             });
         } catch (e) {
-            // alert(e);
+            console.log(e);
         }
         // parse htmlText and create tagged text
         if (blockStyles[b] == 'table' || blockStyles[b] == 'tr' || blockStyles[b] == 'td' || blockStyles[b] == 'olli' || blockStyles[b] == 'ulli' || blockStyles[b] == 'hr') {
@@ -1013,6 +1041,9 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
             htmlText = htmlText.replace(new RegExp(tempStartBlockTag, 'g'), '<ParaStyle:' + blockStyles[b] + '>').replace(new RegExp(tempEndBlockTag, 'g'), '\r');
         }
     }
+
+    console.log('Tagged Text: ' + htmlText);
+
     // create temp file and save tagged text to it
     var porkyTempHTMLFile = new File(File('~').fsName + '/porky-temp-' + Date.now() + '.html');
     porkyTempHTMLFile.open('w');
@@ -1031,6 +1062,7 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
         console.log('Error: cannot place html file! ' + e);
         return false;
     }
+    targetObject = searchReplaceTextframe(targetObject, '[LF]', '\n');
     return targetObject;
 }
 
@@ -1067,6 +1099,7 @@ function placeholderToInlineImage(targetObject, localImageFolder, downloadImage,
             var tempLocalImage = '';
             if (downloadImage) {
                 // true = download and use external images
+                console.log('Download and use external images');
                 if (tempCleanPlaceholderFilename.substr(0, 7) != 'http://') {
                     tempCleanPlaceholderFilename = 'http://' + tempCleanPlaceholderFilename;
                 }
@@ -1074,6 +1107,7 @@ function placeholderToInlineImage(targetObject, localImageFolder, downloadImage,
                 tempLocalImage = httpGetBinaryFile(tempCleanPlaceholderFilename, httpSourcePort, localImageFolder);
             } else if (!downloadImage) {
                 // use local images
+                console.log('Use local images');
                 tempLocalImage = new File(localImageFolder + '/' + tempCleanPlaceholderFilename);
             }
             if (tempLocalImage.exists) {
