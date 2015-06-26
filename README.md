@@ -6,7 +6,7 @@
 
 With porky you
 * automize workflows
-* code what computers are ment to do and not humans
+* code what computers are meant to do and not humans
 * add safety to recurring tasks
 * code less
 * connect to databases and various other data sources (SQL, XML, JSON, CSV, ...)
@@ -20,7 +20,7 @@ Please check the product website http://porky.io for code examples!
 
 
 * Documentation available unter http://porky.io/documentation/
-* Sample Node.Js socket server for handling MySQL, SQLite, JSON and XML sources available in src/bin
+* Sample node.js socket server for handling MySQL, SQLite, JSON and XML sources available in src/bin
 
 
 
@@ -43,7 +43,7 @@ For details please contact us via anfrage@schreiber-freunde.de
 * Now: have fun and create workflows!
 
 ## Windows
-* Download and install Node.Js binaries (e.g. from http://nodejs.org/download/)
+* Download and install node.js binaries (e.g. from http://nodejs.org/download/)
 * for the rest see: OS-X installation
 * it might be necessary to set the system variable NODE\_PATH correctly so it points to the folder node\_modules and Node can find its installed packages
 
