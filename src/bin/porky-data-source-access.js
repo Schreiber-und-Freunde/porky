@@ -27,6 +27,7 @@ var htmlparser = require('htmlparser');
 var markdown = require('markdown').markdown;
 var brucedown = require('brucedown');
 var Entities = require('html-entities').AllHtmlEntities;
+var node_xj = require("xls-to-json");
 
 
 function porkyDataSourceAccess() {
@@ -116,7 +117,7 @@ function porkyDataSourceAccess() {
                             chunkDataCollection += data;
                         });
                     }).on('end', function () {
-                    	console.log('\nGot all chunks, starting to process result');
+                        console.log('\nGot all chunks, starting to process result');
                         processJSON(chunkDataCollection);
                     }).on('error', function (error) {
                         console.log('\n' + error);
@@ -156,7 +157,7 @@ function porkyDataSourceAccess() {
                             chunkDataCollection += data;
                         });
                     }).on('end', function() {
-                    	console.log('\nGot all chunks, starting to process result');
+                        console.log('\nGot all chunks, starting to process result');
                         parseString(chunkDataCollection, function(err, result) {
                             processJSON(JSON.stringify(result));
                         });
@@ -278,6 +279,47 @@ function porkyDataSourceAccess() {
             }
 
 
+            // Excel to JSON conversion
+            if (dataSourceType == 'excelToJSON') {
+                var tempExcelFile = dataSourceName + dataSourceServer;
+
+                if (fs.existsSync(tempExcelFile)) {
+                    // Database file exists
+                    // Load it
+                    console.log('\nUsing Excel file: ' + tempExcelFile);
+
+                    node_xj({
+                        input: tempExcelFile, // Input Excel file
+                        sheet: dataSourceQuery, // Input sheetname
+                        output: null // Output JSON file
+                    }, function(err, result) {
+                        if(err) {
+                            console.log(err);
+                            sock.end();
+                            return;
+                        } else {
+                            // Return result
+                            chunkDataCollection = JSON.stringify(result);
+                            socketWriteResult(chunkDataCollection);
+                        }
+                    });
+
+                } else {
+                    // Excel file does not exist
+                    // Do nothing
+                    console.log('\nError: Excel file \'' + tempExcelFile + '\' does not exist');
+                    sock.end();
+                    return;
+                }
+
+
+
+
+
+
+            }
+
+
             // Client console.log
             if (dataSourceType == 'consoleLog') {
                 dataSourceQuery = dataSourceQuery.replace(/\n/g, ' ').replace(/\r/g, ' ').replace(/\t/g, ' ');
@@ -288,7 +330,7 @@ function porkyDataSourceAccess() {
 
 
             // if dataSourceType is not supported
-            if (dataSourceType != 'SQLite' && dataSourceType != 'MySQL' && dataSourceType != 'XML' && dataSourceType != 'JSON' && dataSourceType != 'htmlToJSON' && dataSourceType != 'markdownToJSON' && dataSourceType != 'markdownToHTML' && dataSourceType != 'consoleLog') {
+            if (dataSourceType != 'SQLite' && dataSourceType != 'MySQL' && dataSourceType != 'XML' && dataSourceType != 'JSON' && dataSourceType != 'htmlToJSON' && dataSourceType != 'markdownToJSON' && dataSourceType != 'markdownToHTML'  && dataSourceType != 'excelToJSON' && dataSourceType != 'consoleLog') {
                 console.log('\nError: dataSourceType \'' + dataSourceType + '\' is not supported');
                 sock.end();
                 return;

@@ -194,7 +194,82 @@ function appendToFrame(frameObject, stringOrFileOrTwoDArray) {
 }
 
 
+// tagThisObject() replaces deprecated tagThis() function
+
+function tagThisObject(tagObject, syncScript, syncIdentifier) {
+    var tagName = 'porky';
+    var associatedElement;
+    var tempTarget;
+    var tempObject;
+
+
+    if((tagObject instanceof Array).toString() === 'false'){
+        tempObject = tagObject;
+        tagObject = [];
+        tagObject.push(tempObject);
+
+    }else if((tagObject instanceof Array).toString() === 'true'){
+        if(tagObject.length > 1){
+            tagObject.splice(1, tagObject.length - 1);
+            console.log('Warning: Too many objects, skipping all but last item of array!');
+        }
+    }
+
+    if(tagObject.toString() === '' || tagObject.toString() === 'undefined' || syncScript === '' || syncIdentifier === ''){
+        console.log('Error: tagThisObject() expects object and parameters... cannot proceed.');
+        return false;
+    }
+
+
+    if (tagObject.toString() === '[object TextFrame]') {
+        
+        tempTarget = tagObject[0].parentStory;
+        if(tempTarget.associatedXMLElement){
+            // untags separately tagged text parts inside of a textframe when the textframe is tagegd afterwards
+            tempTarget.associatedXMLElement.untag();
+        }
+        associatedElement = app.activeDocument.xmlElements.item(0).xmlElements.add(tagName, tempTarget);
+
+    } else if (tagObject.toString() === '[object Rectangle]' || tagObject.toString() === '[object Oval]' || tagObject.toString() === '[object Polygon]' || tagObject.toString() === '[object Table]') {
+        
+        tempTarget = tagObject[0];
+        if(tempTarget.associatedXMLElement){
+            tempTarget.associatedXMLElement.untag();
+        }
+        associatedElement = app.activeDocument.xmlElements.item(0).xmlElements.add(tagName, tempTarget);
+
+    } else if (tagObject.toString() === '[object Word]' || tagObject.toString() === '[object Paragraph]' || tagObject.toString() === '[object InsertionPoint]' || tagObject.toString() === '[object Character]' || tagObject.toString() === '[object Text]' || tagObject.toString() === '[object TextColumn]') {
+
+        tempTarget = tagObject[0];    
+        if(tempTarget.associatedXMLElements[0]){
+            // untags textframe if a word inside of it is tagged afterwards
+            if(tempTarget.associatedXMLElements[0].markupTag.name.toString() === tagName){
+                tempTarget.associatedXMLElements[0].untag();
+            }
+        }
+        associatedElement = app.activeDocument.xmlElements.item(0).xmlElements.add(tagName, tempTarget);
+
+    } else {
+        associatedElement = false;
+        console.log(tagObject + ' is not supported');
+
+    }
+
+    if(associatedElement){
+        associatedElement.xmlAttributes.add('syncScript', syncScript);
+        associatedElement.xmlAttributes.add('syncIdentifier', syncIdentifier);
+    }
+
+    return associatedElement;
+}
+
+
+
 function tagThis(tagObject, syncScript, syncIdentifier) {
+
+    // return tagThisObject(tagObject, syncScript, syncIdentifier);
+
+    
     //SOLL: InsertionPoint, Word, Text, Paragraph, Character, TextColumn, Story, Table, TextFrame, Rectangle, Image
     //IST:     InsertionPoint, Word, Text, Paragraph, Character, TextColumn,          , Table, TextFrame, Rectangle
     var porkyTagElement = '';
@@ -221,7 +296,7 @@ function tagThis(tagObject, syncScript, syncIdentifier) {
         return assXMLElem; //XML Element zurückgeben
     }
     // Rectangle
-    if (tagObject == '[object Rectangle]') {
+    if (tagObject == '[object Rectangle]' || tagObject == '[object Oval]' || tagObject == '[object Polygon]') {
         assXMLElem = tagObject.associatedXMLElement;
         if (assXMLElem === null) {
             assXMLElem = app.activeDocument.xmlElements.item(0).xmlElements.add(tempTagName, tagObject);
@@ -324,6 +399,7 @@ function tagThis(tagObject, syncScript, syncIdentifier) {
         console.log(tagObject + ' tagged');
         return tagObject;
     }
+    
 }
 
 
@@ -969,7 +1045,7 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
                 basedOn: tempCharNoneStyle
             });
         } catch (e) {
-            console.log(e);
+            console.log('Cannot create ' + inlineStyles[i] + ': ' + e);
         }
         // parse htmlText and create tagged text
         // if (inlineStyles[i] == 'a') {
@@ -1004,7 +1080,7 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
                 basedOn: tempParaNoneStyle
             });
         } catch (e) {
-            console.log(e);
+            console.log('Cannot create ' + blockStyles[b] + ': ' + e);
         }
         // parse htmlText and create tagged text
         if (blockStyles[b] == 'table' || blockStyles[b] == 'tr' || blockStyles[b] == 'td' || blockStyles[b] == 'olli' || blockStyles[b] == 'ulli' || blockStyles[b] == 'hr') {
@@ -1050,10 +1126,13 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
     porkyTempHTMLFile.encoding = 'UTF-16';
     porkyTempHTMLFile.lineFeed = 'Unix';
     porkyTempHTMLFile.write('\uFEFF');
-    var isWritten = porkyTempHTMLFile.write('<UNICODE-MAC>\n' + htmlText);
+
+    // writing prefix – adding \r is necessary if you place html content with a leading block element into a tagged [object Text]
+    var isWritten = porkyTempHTMLFile.write('<UNICODE-MAC>\n\r' + htmlText);
     var isClosed = porkyTempHTMLFile.close();
     // place tagged text, InDesign will do the formatting automatically based on existing styles
     try {
+        console.log('Placing tagged text file ' + porkyTempHTMLFile);
         // place temp tagged text file
         targetObject.place(porkyTempHTMLFile);
         // and remove it
@@ -1062,7 +1141,10 @@ function placeHTML(targetObject, htmlText, inlineStyles, blockStyles) {
         console.log('Error: cannot place html file! ' + e);
         return false;
     }
+
+    // cleanup
     targetObject = searchReplaceTextframe(targetObject, '[LF]', '\n');
+
     return targetObject;
 }
 
