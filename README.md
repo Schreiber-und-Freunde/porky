@@ -33,6 +33,7 @@ For details please contact us via anfrage@schreiber-freunde.de
 
 ## OS-X
 * Download this projekt and unzip the archive into your Adobe InDesign Scripts Panel folder
+* porky requires Node.js installed, so download and install the latest version from https://nodejs.org
 * In order to run correctly, porky needs the following npm modules to be installed:
   - request, sqlite3, mysql, pg, xml2js, htmlparser, markdown, brucedown and html-entities
   - navigate via terminal to the porky project folder on your file system where the file package.json is located and enter 'npm install'
@@ -43,7 +44,7 @@ For details please contact us via anfrage@schreiber-freunde.de
 * Now: have fun and create workflows!
 
 ## Windows
-* Download and install node.js binaries (e.g. from http://nodejs.org/download/)
+* porky requires Node.js installed, so download and install the latest version from https://nodejs.org
 * for the rest see: OS-X installation
 * it might be necessary to set the system variable NODE\_PATH correctly so it points to the folder node\_modules and Node can find its installed packages
 
