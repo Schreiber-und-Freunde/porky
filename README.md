@@ -1,6 +1,6 @@
 # porky
 
-[![Analytics](https://ga-beacon.appspot.com/UA-26401744-7/porky/)](https://github.com/Schreiber-und-Freunde/porky)
+porky is not maintained anymore. 
 
 ## porky is a JavaScript extension for Adobe InDesign and other Adobe products supporting ExtendScript
 
