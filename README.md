@@ -1,6 +1,6 @@
 # porky
 
-porky is not maintained anymore. 
+❗ ❗ ❗ porky is not maintained anymore ❗ ❗ ❗ 
 
 ## porky is a JavaScript extension for Adobe InDesign and other Adobe products supporting ExtendScript
 
